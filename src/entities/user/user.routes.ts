@@ -13,8 +13,8 @@ const upload = multer({ storage });
 router.use(verifyToken)
 
 router.get('/:id', getUser)
-    .patch('/:id', upload.single('litmark_image'), patchUser)
+    .patch('/:id', upload.single('shop_co_image'), patchUser)
     .delete('/:id', deleteUser);
-router.post('/', upload.single('litmark_image'), joiValidationMiddleware(userSchema), postUser);
+router.post('/', upload.single('shop_co_image'), joiValidationMiddleware(userSchema), postUser);
 
 export default router;

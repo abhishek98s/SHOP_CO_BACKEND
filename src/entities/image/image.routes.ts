@@ -14,7 +14,7 @@ router.use(verifyToken);
 
 router.get('/:id', getImage)
     .delete('/:id', deleteImage)
-    .patch('/:id', upload.single('litmark_image'), verifyToken, patchImage);
-router.post('/', upload.single('litmark_image'), joiValidationMiddleware(imageSchema), verifyToken, postImage);
+    .patch('/:id', upload.single('shop_co_image'), verifyToken, patchImage);
+router.post('/', upload.single('shop_co_image'), joiValidationMiddleware(imageSchema), verifyToken, postImage);
 
 export default router;

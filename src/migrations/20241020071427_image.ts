@@ -7,6 +7,10 @@ export async function up(knex: Knex): Promise<void> {
         table.integer('product_id').notNullable();
         table.string('image_url').notNullable();
         table.string('caption').notNullable();
+
+        table.string('created_by').notNullable();
+        table.string('updated_by').notNullable();
+        table.timestamps(true, true);
     });
 }
 

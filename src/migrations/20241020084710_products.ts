@@ -14,6 +14,10 @@ export async function up(knex: Knex): Promise<void> {
         table.enu('category', ['new_arrival', 'top_selling']);
         table.enu('style', ['casual', 'formal', 'party', 'gym']);
         table.enu('type', ['t-shirts', 'shorts', 'shirts']);
+
+        table.string('created_by').notNullable();
+        table.string('updated_by').notNullable();
+        table.timestamps(true, true);
     })
 }
 

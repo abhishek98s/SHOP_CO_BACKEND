@@ -10,7 +10,10 @@ export async function up(knex: Knex): Promise<void> {
         table.string('password').notNullable();
         table.text('phone').notNullable();
         table.enu('role', ['seller', 'user', 'admin']).notNullable();
+
         table.integer('image_id').notNullable();
+        table.foreign('image_id').references('images.id');
+        
         table.string('created_by').notNullable();
         table.string('updated_by').notNullable();
         table.timestamps(true, true);
