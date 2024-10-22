@@ -1,9 +1,1 @@
-export interface ImageModel {
-    id?: number,
-    name: string,
-    url: string,
-    type: 'folder' | 'user' | 'bookmark',
-    isdeleted: boolean,
-    created_by?: string,
-    updated_by?: string,
-}
+export interface ImageModel {  id?: number;  product_id?: string;  image_url: string;  caption: string;  created_by?: string;  updated_by?: string;}
