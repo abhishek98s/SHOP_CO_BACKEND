@@ -14,7 +14,7 @@ const name = config.app.name;
 app.use(cors());
 
 import notFoundHandler from './middleware/notFoundHandler';
-import errorHandler from './middleware/errorhandler';
+import errorHandler from './middleware/errorHandler';
 
 app.use(express.static(pathToSwaggerUi.absolutePath()));
 
