@@ -1,0 +1,16 @@
+export interface IProduct {
+    id?: number,
+    name: string,
+    description: string,
+    rating: string | 0,
+    price: number,
+    discount?: number,
+    discounted_price?: number,
+    category: number,
+    style: number,
+    type: number,
+    created_by?: number,
+    updated_by?: number,
+    created_at?: string,
+    updated_at?: string,
+}
