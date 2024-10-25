@@ -1,1 +1,1 @@
-export const userSucessMessages = {  POST_SUCESS: 'User added sucessfully',};
+export const userSucessMessages = {  POST_SUCESS: 'User added sucessfully',};
