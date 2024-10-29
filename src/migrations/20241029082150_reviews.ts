@@ -4,9 +4,9 @@ import type { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
     return knex.schema.createTable('reviews', (table) => {
         table.increments('id').primary();
-        table.integer('rating').notNullable();
+        table.float('rating', 10, 1).notNullable();
         table.string('comment').notNullable();
-        
+
         table.integer('product_id').unsigned().notNullable();
         table.foreign('product_id').references('id').inTable('products').onDelete('CASCADE');
 
