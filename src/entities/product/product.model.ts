@@ -20,3 +20,13 @@ export interface IProduct {
     created_at?: string,
     updated_at?: string,
 }
+
+export interface ISellingProduct {
+    id: number;
+    name: string;
+    rating: number | 0;
+    price: number;
+    discount?: number;
+    discounted_price?: number;
+    image_url: string;
+}
