@@ -4,10 +4,10 @@ import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import { StatusCodes } from 'http-status-codes';
 
-import { uploadImage } from '../entities/image/image.controller';
 import { authExceptionMessages } from './constant/authExceptionMessages';
 import { addUser, getUserByEmail } from '../entities/user/user.service';
 import { authSuccessMessages } from './constant/authSuccessMessages';
+import { uploadImage } from '../utils/image';
 
 export const loginHandler = async (req: Request, res: Response) => {
   try {
