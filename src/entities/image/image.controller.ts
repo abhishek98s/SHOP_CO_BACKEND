@@ -1,64 +1,9 @@
-import { Request, Response } from 'express';
-import { StatusCodes, getReasonPhrase } from 'http-status-codes';
-
-import {
-  findImage,
-  removeImage,
-  saveImage,
-  updateImage,
-} from './image.service';
-import { ImageModel } from './image.model';
+import { Request, Response } from 'express';import { StatusCodes, getReasonPhrase } from 'http-status-codes';
+import * as ImageService from './image.service';
 import { imageExceptionMessages } from './constant/imageExceptionMessages';
-import cloudinary from '../../utils/cloudinaryUpload';
+import { imageSuccessMessages } from './constant/imageSuccessMessages';
+import { uploadImage, validateImageType } from './image.utils';
 
-/**
- * The function checks if the type of an image is valid by matching it against a regular
- * expression.
- * @param {ImageModel}  - The above code is a TypeScript function named `isValidType` that takes an
- * object of type `ImageModel` as a parameter. The `ImageModel` is expected to have a property named
- * `type`.
- * @returns a boolean value of true.
- */
-export const isValidType = ({ type }: ImageModel) => {
-  const reg: RegExp = new RegExp(/\b(?:folder|user|bookmark)\b/i);
-  const isNameValid = reg.test(type);
-  if (!isNameValid) throw new Error(imageExceptionMessages.INVALID_TYPE);
-  return true;
-};
-
-/**
- * The function `uploadImage` uploads an image to Cloudinary and returns the secure URL of the uploaded
- * image.
- * @param {string} imgPath - The `imgPath` parameter is a string that represents the path to the image
- * file that you want to upload.
- * @returns The function `uploadImage` returns the `imgUrl` which is the secure URL of the uploaded
- * image.
- */
-export const uploadImage = async (imgPath: string) => {
-  const imgUrl = (
-    await cloudinary.v2.uploader.upload(imgPath, { folder: 'litmark' })
-  ).secure_url;
-  if (!imgUrl) throw new Error(imageExceptionMessages.UPLOAD_FAILED);
-
-  return imgUrl;
-};
-
-/**
- * The function `validateImageType` checks if a given file name has a valid image type (png, jpg, jpeg,
- * or gif) and throws an error if it doesn't.
- * @param {string} fileName - The `fileName` parameter is a string that represents the name of the
- * image file.
- * @returns nothing (void).
- */
-export const validateImageType = (fileName: string) => {
-  const imageType = fileName.split('.').pop() as string;
-
-  const reg: RegExp = new RegExp(/\b(?:png|jpg|jpeg|gif)\b/i);
-  const isValidType = reg.test(imageType);
-
-  if (!isValidType) throw new Error(imageExceptionMessages.INVALID_IMAGE_TYPE);
-  return;
-};
 
 /**
  * The function `getImage` is an asynchronous function that handles a request to retrieve an image by
@@ -78,7 +23,7 @@ export const getImage = async (req: Request, res: Response) => {
     const imageId: number = parseInt(req.params.id);
     if (!imageId) throw new Error(imageExceptionMessages.INVALID_ID);
 
-    const result = await findImage(imageId);
+    const result = await ImageService.findImage(imageId);
     if (!result) throw new Error(imageExceptionMessages.IMAGE_NOT_FOUND);
 
     return res.status(StatusCodes.OK).json({ success: true, data: result });
@@ -111,15 +56,12 @@ export const postImage = async (req: Request, res: Response) => {
     req.body.url = await uploadImage(imgPath);
     req.body.name = req.file?.filename;
 
-    const { url, type, name, user } = req.body;
+    const { url, caption, user } = req.body;
 
-    if (!type) throw new Error(imageExceptionMessages.TYPE_REQUIRED);
-
-    isValidType(req.body);
     validateImageType(req.file!.originalname);
 
-    const result = await saveImage(
-      { type, url, name, isdeleted: false },
+    const result = await ImageService.saveImage(
+      { url, caption },
       user.username,
     );
 
@@ -151,25 +93,26 @@ export const patchImage = async (req: Request, res: Response) => {
 
     if (!name) throw new Error(imageExceptionMessages.NAME_REQUIRED);
 
-    const currentImage = await findImage(imageId);
+    const currentImage = await ImageService.findImage(imageId);
 
     if (req.file) {
       const imgPath = req.file!.path;
       req.body.url = await uploadImage(imgPath);
     }
 
-    // const result: ImageModel = await updateImage({ url, type, name }, imageId, user.id)
-    const result: ImageModel = await updateImage(
+    // const result: IImage = await updateImage({ url, type, caption }, imageId, user.id)
+    await ImageService.updateImage(
       {
         ...currentImage,
-        name,
-        updated_by: user.username,
         url: req.file ? req.body.url : currentImage.url,
+        updated_by: user.username,
       },
       imageId,
     );
 
-    res.status(StatusCodes.OK).json({ success: true, data: result });
+    res
+      .status(StatusCodes.OK)
+      .json({ success: true, message: imageSuccessMessages.UPDATE_SUCCESS });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       msg: (error as Error).message,
@@ -194,7 +137,7 @@ export const deleteImage = async (req: Request, res: Response) => {
     const imageId: number = parseInt(req.params.id);
     if (!imageId) throw new Error(imageExceptionMessages.INVALID_ID);
 
-    const result = await removeImage(imageId);
+    const result = await ImageService.removeImage(imageId);
 
     res.status(StatusCodes.OK).json({ success: true, data: result });
   } catch (error) {
