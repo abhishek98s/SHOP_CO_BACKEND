@@ -1,12 +1,14 @@
-import knex from 'knex';
+import knex from '../../config/knex.config';
 import { ISellingProduct } from './product.model';
+
+export const fetchNewSellingProducts = async (): Promise<ISellingProduct[]> => {
+    return await knex('products')
+        .select('id', 'name', 'rating', 'price', 'discount', 'discounted_price', 'image_url')
+        .where('category_id', 1);
+};
 
 export const fetchTopSellingProducts = async (): Promise<ISellingProduct[]> => {
     return await knex('products').select('id', 'name', 'rating', 'price', 'discount', 'discounted_price', 'image_url').where('category_id', 2);
-};
-
-export const fetchNewSellingProducts = async (): Promise<ISellingProduct[]> => {
-    return await knex('products').select('id', 'name', 'rating', 'price', 'discount', 'discounted_price', 'image_url').where('category_id', 1);
 };
 
 export const fetchProductDetail = async (productId: number) => {
@@ -22,6 +24,6 @@ export const fetchProductDetail = async (productId: number) => {
         'products.stock_quantity',
         'product_styles.name as style_name',
     )
-        .join('product_style', 'products.style_id', 'product_style.id')
+        .join('product_styles', 'products.style_id', 'product_styles.id')
         .where('products.id', productId);
 };

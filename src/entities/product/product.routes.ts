@@ -13,5 +13,6 @@ router.use(verifyToken);
 
 router.get('/new_arrival', ProductController.getNewSellingProducts);
 router.get('/top_selling', ProductController.getTopSellingProducts);
+router.get('/:id', ProductController.getProductDetail);
 
 export default router;
