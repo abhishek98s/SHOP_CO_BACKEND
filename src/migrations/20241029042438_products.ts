@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
         table.decimal('price', 10, 2).notNullable();
         table.decimal('discount', 10, 2).defaultTo(0);
         table.decimal('discounted_price', 10, 2);
-        table.integer('stock_qualtity').notNullable();
+        table.integer('stock_quantity').notNullable();
         
         table.integer('image_id').notNullable();
         table.foreign('image_id').references('id').inTable('images').onDelete('CASCADE');
