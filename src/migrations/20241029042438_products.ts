@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<void> {
         table.decimal('discounted_price', 10, 2);
         table.integer('stock_qualtity').notNullable();
         
-        table.string('image_id').notNullable();
+        table.integer('image_id').notNullable();
         table.foreign('image_id').references('id').inTable('images').onDelete('CASCADE');
 
         table.integer('size_id').notNullable();
