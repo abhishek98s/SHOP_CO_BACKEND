@@ -1,9 +1,7 @@
-import { Request, Response } from 'express';import { StatusCodes, getReasonPhrase } from 'http-status-codes';
-import * as ImageService from './image.service';
+import { Request, Response } from 'express';import { StatusCodes } from 'http-status-codes';import * as ImageService from './image.service';
 import { imageExceptionMessages } from './constant/imageExceptionMessages';
 import { imageSuccessMessages } from './constant/imageSuccessMessages';
-import { uploadImage, validateImageType } from './image.utils';
-
+import { validateImageType } from '../../utils/image';
 
 /**
  * The function `getImage` is an asynchronous function that handles a request to retrieve an image by
@@ -24,13 +22,12 @@ export const getImage = async (req: Request, res: Response) => {
     if (!imageId) throw new Error(imageExceptionMessages.INVALID_ID);
 
     const result = await ImageService.findImage(imageId);
-    if (!result) throw new Error(imageExceptionMessages.IMAGE_NOT_FOUND);
 
     return res.status(StatusCodes.OK).json({ success: true, data: result });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      msg: (error as Error).message,
-      error: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+      success: false,
+      message: (error as Error).message,
     });
   }
 };
@@ -51,25 +48,23 @@ export const postImage = async (req: Request, res: Response) => {
     if (!req.file) {
       throw new Error(imageExceptionMessages.FILE_REQUIRED);
     }
-    const imgPath = req.file!.path;
-
-    req.body.url = await uploadImage(imgPath);
-    req.body.name = req.file?.filename;
-
-    const { url, caption, user } = req.body;
 
     validateImageType(req.file!.originalname);
 
-    const result = await ImageService.saveImage(
-      { url, caption },
-      user.username,
-    );
+    const { user } = req.body;
 
-    res.status(StatusCodes.OK).json({ success: true, data: result });
+    const imagePath = req.file!.path;
+    const imageName = req.file!.originalname;
+
+    await ImageService.saveImage(imagePath, imageName, user.username);
+
+    res
+      .status(StatusCodes.CREATED)
+      .json({ success: true, message: imageSuccessMessages.POST_SUCCESS });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      msg: (error as Error).message,
-      error: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+      success: false,
+      message: (error as Error).message,
     });
   }
 };
@@ -89,24 +84,21 @@ export const patchImage = async (req: Request, res: Response) => {
   try {
     const imageId: number = parseInt(req.params.id);
 
-    const { name, user } = req.body;
-
-    if (!name) throw new Error(imageExceptionMessages.NAME_REQUIRED);
-
-    const currentImage = await ImageService.findImage(imageId);
-
-    if (req.file) {
-      const imgPath = req.file!.path;
-      req.body.url = await uploadImage(imgPath);
+    if (!req.file) {
+      throw new Error(imageExceptionMessages.FILE_REQUIRED);
     }
 
-    // const result: IImage = await updateImage({ url, type, caption }, imageId, user.id)
+    const { user } = req.body;
+
+    await ImageService.findImage(imageId);
+
+    const imagePath = req.file!.path;
+    const imageName = req.file!.originalname;
+
     await ImageService.updateImage(
-      {
-        ...currentImage,
-        url: req.file ? req.body.url : currentImage.url,
-        updated_by: user.username,
-      },
+      imagePath,
+      imageName,
+      user.username,
       imageId,
     );
 
@@ -115,8 +107,8 @@ export const patchImage = async (req: Request, res: Response) => {
       .json({ success: true, message: imageSuccessMessages.UPDATE_SUCCESS });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      msg: (error as Error).message,
-      error: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+      success: false,
+      message: (error as Error).message,
     });
   }
 };
@@ -137,13 +129,15 @@ export const deleteImage = async (req: Request, res: Response) => {
     const imageId: number = parseInt(req.params.id);
     if (!imageId) throw new Error(imageExceptionMessages.INVALID_ID);
 
-    const result = await ImageService.removeImage(imageId);
+    await ImageService.removeImage(imageId);
 
-    res.status(StatusCodes.OK).json({ success: true, data: result });
+    res
+      .status(StatusCodes.OK)
+      .json({ success: true, message: imageSuccessMessages.DELETE_SUCCESS });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      msg: (error as Error).message,
-      error: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+      success: false,
+      message: (error as Error).message,
     });
   }
 };

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';import validator from 'validator';
 import { addUser, getUserById, removeUser, updateUser } from './user.service';
-import { uploadImage, validateImageType } from '../image/image.controller';
 import { userExceptionMessages } from './constant/userExceptionMessages';
 import { userSucessMessages } from './constant/userSucessMessages';
+import { uploadImage, validateImageType } from '../../utils/image';
 
 /**
  * The function `getUser` is an asynchronous function that retrieves a user by their ID and returns the
