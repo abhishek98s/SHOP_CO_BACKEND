@@ -7,6 +7,7 @@ import { StatusCodes } from 'http-status-codes';
 import { uploadImage } from '../entities/image/image.controller';
 import { authExceptionMessages } from './constant/authExceptionMessages';
 import { addUser, getUserByEmail } from '../entities/user/user.service';
+import { authSuccessMessages } from './constant/authSuccessMessages';
 
 export const loginHandler = async (req: Request, res: Response) => {
   try {
@@ -18,7 +19,7 @@ export const loginHandler = async (req: Request, res: Response) => {
 
     const user = await getUserByEmail(email);
 
-    const { username, id, phone, email: dbEmail } = user;
+    const { username, id, phone, email: dbEmail, role } = user;
 
     const passordMatched: boolean = await bcrypt.compare(
       password,
@@ -30,7 +31,7 @@ export const loginHandler = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign(
-      { id, username, phone, email: dbEmail },
+      { id, username, phone, email: dbEmail, role },
       process.env.JWT_TOKEN as string,
     );
 
@@ -83,7 +84,7 @@ export const registerHandler = async (req: Request, res: Response) => {
       updated_by: username,
     });
 
-    res.json({ success: true, message: 'Registered Successfully' });
+    res.json({ success: true, message: authSuccessMessages.REGISTER_SUCCESS });
   } catch (error: unknown) {
     res
       .status(StatusCodes.UNPROCESSABLE_ENTITY)
