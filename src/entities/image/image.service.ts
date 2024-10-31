@@ -12,7 +12,7 @@ export const saveImage = async (
   imagePath: string,
   imageName: string,
   username: string,
-): Promise<IImage> => {
+): Promise<number> => {
   // const url = await uploadImage(imagePath);
   const url =
     'https://tse1.mm.bing.net/th?&id=OVP.ndEpbTsn7FXjzgBPGNO7vgHgFo&w=197&h=110&c=7&pid=1.7&rs=1';
@@ -27,7 +27,7 @@ export const saveImage = async (
   const image = await ImageDAO.create(newImage);
   const { image_id } = image;
 
-  return await ImageDAO.fetchById(image_id);
+  return image_id;
 };
 
 export const updateImage = async (
