@@ -17,12 +17,12 @@ export const verifyToken = (
         if (err) {
           throw new Error('Unauthorized');
         }
-
+        console.log(decoded);
         req.body.user = decoded;
         next();
       },
     );
   } catch (error) {
-    res.status(401).json({ success:false, message: (error as Error).message });
+    res.status(401).json({ success: false, message: (error as Error).message });
   }
 };
