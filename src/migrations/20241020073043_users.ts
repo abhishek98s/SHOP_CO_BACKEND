@@ -9,9 +9,9 @@ export async function up(knex: Knex): Promise<void> {
     table.text('phone').notNullable();
     table.enu('role', ['seller', 'user', 'admin']).notNullable();
 
-    table.string('image_id').nullable();
+    table.integer('image_id').nullable();
     table
-      .string('image_id')
+      .foreign('image_id')
       .references('id')
       .inTable('images')
       .onDelete('CASCADE');
