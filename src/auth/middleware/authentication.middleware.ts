@@ -1,5 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import { NextFunction, Request, Response } from 'express';import jwt from 'jsonwebtoken';
 
 export const verifyToken = (
   req: Request,
@@ -17,12 +16,11 @@ export const verifyToken = (
         if (err) {
           throw new Error('Unauthorized');
         }
-
         req.body.user = decoded;
         next();
       },
     );
   } catch (error) {
-    res.status(401).json({ success:false, message: (error as Error).message });
+    res.status(401).json({ success: false, message: (error as Error).message });
   }
 };
