@@ -7,7 +7,6 @@ import { StatusCodes } from 'http-status-codes';
 import { authExceptionMessages } from './constant/authExceptionMessages';
 import { addUser, getUserByEmail } from '../entities/user/user.service';
 import { authSuccessMessages } from './constant/authSuccessMessages';
-import { uploadImage } from '../utils/image';
 
 export const loginHandler = async (req: Request, res: Response) => {
   try {
@@ -46,6 +45,7 @@ export const loginHandler = async (req: Request, res: Response) => {
 export const registerHandler = async (req: Request, res: Response) => {
   try {
     const { username, email, password, role, phone } = req.body;
+    let isImage = false;
 
     if (!username || !email || !password || !phone) {
       throw new Error(authExceptionMessages.USER_CREDENTIALS);
@@ -66,23 +66,27 @@ export const registerHandler = async (req: Request, res: Response) => {
       throw new Error(authExceptionMessages.PASS_VALIDATION);
     }
 
-    let imageUrl;
-
-    if (req.file) {
-      const imagePath = req.file!.path;
-      imageUrl = await uploadImage(imagePath);
-    }
-
-    await addUser({
+    const userObj = {
       username,
       email,
       password,
       phone,
       role: role ? role : 'user',
-      image_url: imageUrl ? imageUrl : '',
+      image_id: null,
       created_by: username,
       updated_by: username,
-    });
+    };
+
+    if (!req.file) {
+      await addUser(isImage, username, userObj);
+    } else {
+      isImage = true;
+
+      const imagePath = req.file.path;
+      const imageName = req.file.originalname;
+
+      await addUser(isImage, username, userObj, imagePath, imageName);
+    }
 
     res.json({ success: true, message: authSuccessMessages.REGISTER_SUCCESS });
   } catch (error: unknown) {

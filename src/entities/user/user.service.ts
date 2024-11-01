@@ -1,17 +1,17 @@
 import bcrypt from 'bcrypt';
-
 import { userExceptionMessages } from './constant/userExceptionMessages';
 import * as UserDAO from './user.repository';
-import { UserModel } from './user.model';
+import * as ImageService from '../image/image.service';
+import { IReturnUser, IUpdateUser, IUser } from './user.model';
 
 /**
  * The function `getUserById` retrieves a user from a database based on their ID and returns it.
  * @param {number} userId - The `userId` parameter is a number that represents the unique identifier of
  * a user.
- * @returns a Promise that resolves to a UserModel object.
+ * @returns a Promise that resolves to a IUser object.
  */
 export const getUserByEmail = async (email: string) => {
-  const user: UserModel = await UserDAO.findUserByEmail(email);
+  const user: IUser = await UserDAO.findUserByEmail(email);
 
   if (!user) throw new Error(userExceptionMessages.USER_NOT_FOUND);
 
@@ -22,10 +22,10 @@ export const getUserByEmail = async (email: string) => {
  * The function `getUserById` retrieves a user from a database based on their ID and returns it.
  * @param {number} userId - The `userId` parameter is a number that represents the unique identifier of
  * a user.
- * @returns a Promise that resolves to a UserModel object.
+ * @returns a Promise that resolves to a IUser object.
  */
 export const getUserById = async (userId: number) => {
-  const user: UserModel = await UserDAO.fetchById(userId);
+  const user: IReturnUser = await UserDAO.fetchById(userId);
 
   if (!user) throw new Error(userExceptionMessages.USER_NOT_FOUND);
 
@@ -35,26 +35,40 @@ export const getUserById = async (userId: number) => {
 /**
  * The function `addUser` takes in user information, hashes the password, inserts the user into a
  * database, and returns the user.
- * @param {UserModel} userInfo - The `userInfo` parameter is an object of type `UserModel` which
+ * @param {IUser} userInfo - The `userInfo` parameter is an object of type `IUser` which
  * contains information about the user that needs to be added. This information typically includes
  * properties such as `username`, `email`, and `password`.
  * @returns the user object that was inserted into the 'users' table in the database.
  */
-export const addUser = async (userInfo: UserModel) => {
+export const addUser = async (
+  isImage: boolean,
+  username: string,
+  userData: IUser,
+  imagePath?: string,
+  imageName?: string,
+) => {
   try {
-
-    const { password } = userInfo;
+    const password = userData.password;
+    let image_id = userData.image_id;
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = await UserDAO.create({ ...userInfo, password: hashedPassword });
-    if (!user) throw new Error(userExceptionMessages.CREATE_FAILED);
+    if (isImage) {
+      image_id = await ImageService.saveImage(imagePath!, imageName!, username);
+    }
+
+    const user = await UserDAO.create({
+      ...userData,
+      image_id,
+      password: hashedPassword,
+    });
+
+    if (!user.userID) throw new Error(userExceptionMessages.CREATE_FAILED);
 
     const { userID } = user;
 
     return await UserDAO.fetchById(userID);
-    
   } catch (error) {
     const err = error as Error;
     if (err.message === userExceptionMessages.DUPLICATE_EMAIL) {
@@ -69,22 +83,46 @@ export const addUser = async (userInfo: UserModel) => {
  * The function updates a user's information in the database and returns the updated user.
  * @param {number} userId - The `userId` parameter is the unique identifier of the user that needs to
  * be updated. It is of type `number`.
- * @param {UserModel} updatedUserInfo - The `updatedUserInfo` parameter is an object of type
- * `UserModel` that contains the updated information for the user.
+ * @param {IUser} updatedUserInfo - The `updatedUserInfo` parameter is an object of type
+ * `IUser` that contains the updated information for the user.
  * @returns the updated user information.
  */
 export const updateUser = async (
+  isImage: boolean,
   userId: number,
-  updatedUserInfo: UserModel,
+  username: string,
+  updatedUserData: IUpdateUser,
+  imagePath?: string,
+  imageName?: string,
 ) => {
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(updatedUserInfo.password, salt);
+  const currentUser = await getUserById(userId);
+  let image_id = updatedUserData.image_id;
 
-  const updatedUser = { ...updatedUserInfo, password: hashedPassword };
+  if (!currentUser) {
+    throw new Error(userExceptionMessages.USER_NOT_FOUND);
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(updatedUserData.password, salt);
+
+  if (isImage) {
+    image_id = await ImageService.saveImage(imagePath!, imageName!, username);
+  }
+
+  const updatedUser = {
+    ...currentUser,
+    ...updatedUserData,
+    password: hashedPassword,
+    image_id,
+  };
+
+  delete updatedUser.image_url;
+
   const user = await UserDAO.update(updatedUser, userId);
+
   if (!user) throw new Error(userExceptionMessages.UPDATE_FAILED);
 
-  return await UserDAO.fetchById(userId);
+  return;
 };
 
 /**
@@ -93,12 +131,12 @@ export const updateUser = async (
  * be removed from the database.
  * @returns the deleted user object.
  */
-export const removeUser = async (userId: number) => {
+export const removeUser = async (userId: number): Promise<void> => {
   const currentUser = await getUserById(userId);
   if (!currentUser) throw new Error('User doesnot exist');
 
   const user = await UserDAO.remove(userId);
   if (!user) throw new Error(userExceptionMessages.DELETE_FAILED);
 
-  return currentUser;
+  return;
 };
