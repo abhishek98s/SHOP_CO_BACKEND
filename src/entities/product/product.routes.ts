@@ -15,12 +15,14 @@ router.use(verifyToken);
 
 router.get('/new_arrival', ProductController.getNewSellingProducts);
 router.get('/top_selling', ProductController.getTopSellingProducts);
-router
-  .route('/:id')
-  .get(ProductController.getProductDetail)
-  .post(
-    upload.single('shop_co_image'),
-    joiValidationMiddleware(productSchema),
-    ProductController.postProduct,
-  );
+
+router.post(
+  '/',
+  upload.single('shop_co_image'),
+  joiValidationMiddleware(productSchema),
+  ProductController.postProduct,
+);
+
+router.route('/:id').get(ProductController.getProductDetail);
+
 export default router;
