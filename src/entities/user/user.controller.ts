@@ -1,47 +1,32 @@
-import { Request, Response } from 'express';import validator from 'validator';
-import { addUser, getUserById, removeUser, updateUser } from './user.service';
-import { uploadImage, validateImageType } from '../image/image.controller';
+import { Request, Response } from 'express';
+import validator from 'validator';
+
 import { userExceptionMessages } from './constant/userExceptionMessages';
 import { userSucessMessages } from './constant/userSucessMessages';
+import { validateImageType } from '../../utils/image';
+import { IUser } from './user.model';
 
-/**
- * The function `getUser` is an asynchronous function that retrieves a user by their ID and returns the
- * result as JSON.
- * @param {Request} req - The `req` parameter is an object that represents the HTTP request made by the
- * client. It contains information such as the request method, headers, query parameters, and request
- * body.
- * @param {Response} res - The `res` parameter is the response object that is used to send the response
- * back to the client. It contains methods and properties that allow you to control the response, such
- * as setting the status code, headers, and sending the response body.
- * @returns a JSON response with the data property set to the result of the getUserById function.
- */
+import * as UserService from './user.service';
+
 export const getUser = async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.id);
     if (!userId) throw new Error(userExceptionMessages.INVALID_ID);
 
-    const result = await getUserById(userId);
+    const result = await UserService.getUserById(userId);
 
     return res.json({ success: true, data: result });
   } catch (error) {
-    return res.status(500).json({ success:false, message: (error as Error).message });
+    return res
+      .status(500)
+      .json({ success: false, message: (error as Error).message });
   }
 };
 
-/**
- * The function `postUser` is an asynchronous function that handles the creation of a new user,
- * including validation of input data and saving an image if provided.
- * @param {Request} req - The `req` parameter is an object representing the HTTP request made to the
- * server. It contains information such as the request headers, request body, request method, and
- * request URL.
- * @param {Response} res - The `res` parameter is the response object that is used to send the response
- * back to the client. It contains methods and properties that allow you to control the response, such
- * as setting the status code, headers, and sending the response body.
- * @returns a JSON response with the data property set to the result variable.
- */
 export const postUser = async (req: Request, res: Response) => {
   try {
     const { username, email, password, phone, role, user } = req.body;
+    let isImagePresent = false;
 
     if (!username || !email || !password) {
       throw new Error(userExceptionMessages.USER_CREDENTIALS_REQUIRED);
@@ -61,41 +46,44 @@ export const postUser = async (req: Request, res: Response) => {
       throw new Error(userExceptionMessages.INVALID_EMAIL_PASS);
     }
 
-    let imageUrl = '';
-
-    if (req.file) {
-      const imagePath = req.file!.path;
-      validateImageType(req.file.originalname);
-      imageUrl = await uploadImage(imagePath);
-    }
-
-    await addUser({
+    const userObj: IUser = {
       username,
       email,
       password,
       phone,
       role: role ? role : 'user',
-      image_url: imageUrl,
+      image_id: null,
       created_by: user.username,
       updated_by: user.username,
-    });
+    };
+
+    if (!req.file) {
+      await UserService.addUser(isImagePresent, user.username, userObj);
+    } else {
+      isImagePresent = true;
+
+      validateImageType(req.file.originalname);
+
+      const imagePath = req.file!.path;
+      const imageName = req.file!.originalname;
+
+      await UserService.addUser(
+        isImagePresent,
+        user.username,
+        userObj,
+        imagePath,
+        imageName,
+      );
+    }
 
     return res.json({ success: true, message: userSucessMessages.POST_SUCESS });
   } catch (error) {
-    return res.status(500).json({ success:false, message: (error as Error).message });
+    return res
+      .status(500)
+      .json({ success: false, message: (error as Error).message });
   }
 };
 
-/**
- * The function `patchUser` is an asynchronous function that updates a user's information, including
- * their username, password, and profile image, and returns the updated user data.
- * @param {Request} req - The `req` parameter is an object that represents the HTTP request made to the
- * server. It contains information such as the request headers, request body, request parameters, etc.
- * @param {Response} res - The `res` parameter is the response object that is used to send the response
- * back to the client. It contains methods and properties that allow you to control the response, such
- * as setting the status code, headers, and sending the response body.
- * @returns a JSON response with the updated user data.
- */
 export const patchUser = async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.id);
@@ -103,6 +91,7 @@ export const patchUser = async (req: Request, res: Response) => {
     if (!userId) throw new Error(userExceptionMessages.INVALID_ID);
 
     const { username, password, user } = req.body;
+    let isImage = false;
 
     if (!username || !password) {
       throw new Error(userExceptionMessages.USERNAME_PASS_REQUIRED);
@@ -119,53 +108,56 @@ export const patchUser = async (req: Request, res: Response) => {
       throw new Error(userExceptionMessages.PASS_VALIDATION);
     }
 
-    const currentUser = await getUserById(userId);
-
-    if (!currentUser) {
-      throw new Error(userExceptionMessages.USER_NOT_FOUND);
-    }
-
-    let imageUrl;
-    if (req.file) {
-      const imagePath = req.file!.path;
-      imageUrl = await uploadImage(imagePath);
-    }
-
-    const result = await updateUser(userId, {
-      ...currentUser,
+    const updatedUser = {
       username,
       password,
-      image_url: imageUrl ? imageUrl : '',
+      image_id: null,
       updated_by: user.username,
-    });
+    };
 
-    return res.json({ success: true, data: result });
+    if (!req.file) {
+      await UserService.updateUser(isImage, userId, user.name, updatedUser);
+    } else {
+      isImage = true;
+      const imagePath = req.file.path;
+      const imageName = req.file.originalname;
+
+      await UserService.updateUser(
+        isImage,
+        userId,
+        user.name,
+        updatedUser,
+        imagePath,
+        imageName,
+      );
+    }
+
+    return res.json({
+      success: true,
+      message: userSucessMessages.UPDATE_SUCCESS,
+    });
   } catch (error) {
-    return res.status(500).json({ success:false, message: (error as Error).message });
+    return res
+      .status(500)
+      .json({ success: false, message: (error as Error).message });
   }
 };
 
-/**
- * The deleteUser function is an asynchronous function that removes a user from the system based on the
- * provided user id.
- * @param {Request} req - The `req` parameter is an object that represents the HTTP request made to the
- * server. It contains information such as the request method, request headers, request body, request
- * parameters, etc.
- * @param {Response} res - The `res` parameter is the response object that is used to send the response
- * back to the client. It contains methods and properties that allow you to control the response, such
- * as setting the status code, headers, and sending the response body.
- * @returns a JSON response with the data property set to the result of the removeUser function.
- */
 export const deleteUser = async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.id);
 
     if (!userId) throw new Error(userExceptionMessages.INVALID_ID);
 
-    const result = await removeUser(userId);
+    await UserService.removeUser(userId);
 
-    return res.json({ success: true, data: result });
+    return res.json({
+      success: true,
+      message: userSucessMessages.DELETE_SUCCESS,
+    });
   } catch (error) {
-    return res.status(500).json({ success:false, message: (error as Error).message });
+    return res
+      .status(500)
+      .json({ success: false, message: (error as Error).message });
   }
 };

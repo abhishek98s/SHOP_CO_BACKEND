@@ -1,21 +1,20 @@
 import { QueryError } from 'mysql2';
 import knex from '../../config/knex.config';
-import { UserModel } from './user.model';
+import { IReturnUser, IUser } from './user.model';
 import { userExceptionMessages } from './constant/userExceptionMessages';
 
-/**
- * This function finds a user in the database by their email address and returns their information.
- * @param {string} email - The `findUserByEmail` function is designed to retrieve a user from a
- * database table named 'users' based on the provided email address. The function takes an email
- * address as a parameter and returns a Promise that resolves to a `UserModel` object.
- * @returns The `findUserByEmail` function is returning a Promise that resolves to a `UserModel` object
- * containing the user's information such as username, id, password, email, phone, and image_url. The
- * function queries the 'users' table in the database using the provided email address to find and
- * return the user's details.
- */
-export const findUserByEmail = async (email: string): Promise<UserModel> => {
+export const findUserByEmail = async (email: string): Promise<IUser> => {
   return await knex('users')
-    .select('username', 'id', 'password', 'email', 'phone', 'image_url')
+    .select(
+      'users.id',
+      'users.username',
+      'users.password',
+      'users.email',
+      'users.role',
+      'users.phone',
+      'images.url as image_url',
+    )
+    .leftJoin('images', 'users.image_id', 'users.id')
     .where('email', email)
     .first();
 };
@@ -29,17 +28,24 @@ export const findUserByEmail = async (email: string): Promise<UserModel> => {
  * user's `id`, `username`, `email`, and `image_url` from the database table `users` where the `id`
  * matches the `userId` parameter and the `isdeleted` column is `false`.
  */
-export const fetchById = async (userId: number) => {
+export const fetchById = async (userId: number): Promise<IReturnUser> => {
   return await knex('users')
-    .select('id', 'username', 'email', 'image_url')
-    .where('id', userId)
+    .select(
+      'users.id',
+      'users.username',
+      'users.email',
+      'users.phone',
+      'images.url as image_url',
+    )
+    .leftJoin('images', 'users.image_id', 'users.id')
+    .where('users.id', userId)
     .first();
 };
 
-export const create = async (userData: UserModel) => {
+export const create = async (userData: IUser) => {
   try {
     const user = await knex('users').insert(userData).returning('id');
-    
+
     return { userID: user[0].id };
   } catch (error) {
     const err = error as QueryError;
@@ -52,8 +58,8 @@ export const create = async (userData: UserModel) => {
   }
 };
 
-export const update = async (userData: UserModel, userId: number) => {
-  return await knex('users').select('*').where('id', userId).update(userData);
+export const update = async (userData: IReturnUser, userId: number) => {
+  return await knex('users').where('id', userId).update(userData);
 };
 
 export const remove = async (userId: number) => {
