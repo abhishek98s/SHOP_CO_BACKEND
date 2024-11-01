@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-import { Request, Response } from 'express';
-import validator from 'validator';
-=======
 import { Request, Response } from 'express';import validator from 'validator';
->>>>>>> a37828436ab7b03c3c247d18204e528755ac4b9f
 
 import { userExceptionMessages } from './constant/userExceptionMessages';
 import { userSucessMessages } from './constant/userSucessMessages';
