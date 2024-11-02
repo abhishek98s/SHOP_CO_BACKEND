@@ -1,18 +1,30 @@
-export interface IProduct {  id?: number;
+export interface ISellingProduct {  id?: number;
   name: string;
-  description: string;
   rating: number | 0;
   price: number;
   discount?: number;
   discounted_price?: number;
+
+  image_url: string;
+}
+
+export interface IProduct {
+  id?: number;
+  name: string;
+  rating: number | 0;
+  price: number;
+  discount?: number;
+  discounted_price?: number;
+
+  description: string;
   stock_quantity: number | 0;
   tags?: string[];
 
   image_id: number | null;
   category_id: number;
-  size_id?: number;
-  style_id?: number;
-  type_id?: number;
+  size_id: number;
+  style_id: number;
+  type_id: number;
 
   created_by?: string;
   updated_by?: string;
@@ -20,12 +32,19 @@ export interface IProduct {  id?: number;
   updated_at?: string;
 }
 
-export interface ISellingProduct {
-  id: number;
+export interface IProductUser {
   name: string;
   rating: number | 0;
   price: number;
   discount?: number;
   discounted_price?: number;
-  image_url: string;
+
+  description: string;
+  stock_quantity: number | 0;
+
+  image_id: number | null;
+  category_id: number;
+
+  created_by?: string;
+  updated_by?: string;
 }

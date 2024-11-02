@@ -4,7 +4,7 @@ import multer from 'multer';
 import { verifyToken } from '../../auth/middleware/authentication.middleware';
 import * as ProductController from './product.controller';
 import joiValidationMiddleware from '../../auth/middleware/joiValidationMiddleware';
-import { productSchema } from './product.schema';
+import { productSchema, updatProductSchema } from './product.schema';
 
 const router = express.Router();
 const storage = multer.memoryStorage();
@@ -19,10 +19,19 @@ router.get('/top_selling', ProductController.getTopSellingProducts);
 router.post(
   '/',
   upload.single('shop_co_image'),
+  verifyToken,
   joiValidationMiddleware(productSchema),
   ProductController.postProduct,
 );
 
-router.route('/:id').get(ProductController.getProductDetail);
+router
+  .route('/:id')
+  .get(ProductController.getProductDetail)
+  .patch(
+    upload.single('shop_co_image'),
+    verifyToken,
+    joiValidationMiddleware(updatProductSchema),
+    ProductController.patchProduct,
+  );
 
 export default router;
