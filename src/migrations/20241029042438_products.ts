@@ -1,4 +1,5 @@
-import type { Knex } from 'knex';export async function up(knex: Knex): Promise<void> {
+import type { Knex } from 'knex';
+export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable('products', (table) => {
     table.increments('id').primary();
     table.string('name', 255).notNullable();
@@ -14,13 +15,6 @@ import type { Knex } from 'knex';export async function up(knex: Knex): Promise<v
       .foreign('image_id')
       .references('id')
       .inTable('images')
-      .onDelete('CASCADE');
-
-    table.integer('size_id').notNullable();
-    table
-      .foreign('size_id')
-      .references('id')
-      .inTable('sizes')
       .onDelete('CASCADE');
 
     table.integer('category_id').notNullable();
