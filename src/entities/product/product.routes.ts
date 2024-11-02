@@ -2,7 +2,9 @@ import express from 'express';
 import multer from 'multer';
 
 import { verifyToken } from '../../auth/middleware/authentication.middleware';
-import { getProductDetail } from './product.controller';
+import * as ProductController from './product.controller';
+import joiValidationMiddleware from '../../auth/middleware/joiValidationMiddleware';
+import { productSchema, updatProductSchema } from './product.schema';
 
 const router = express.Router();
 const storage = multer.memoryStorage();
@@ -11,6 +13,26 @@ const upload = multer({ storage });
 
 router.use(verifyToken);
 
-router.get('/:id', getProductDetail);
+router.get('/new_arrival', ProductController.getNewSellingProducts);
+router.get('/top_selling', ProductController.getTopSellingProducts);
+
+router.post(
+  '/',
+  upload.single('shop_co_image'),
+  verifyToken,
+  joiValidationMiddleware(productSchema),
+  ProductController.postProduct,
+);
+
+router
+  .route('/:id')
+  .get(ProductController.getProductDetail)
+  .patch(
+    upload.single('shop_co_image'),
+    verifyToken,
+    joiValidationMiddleware(updatProductSchema),
+    ProductController.patchProduct,
+  )
+  .delete(ProductController.deleteProduct);
 
 export default router;
