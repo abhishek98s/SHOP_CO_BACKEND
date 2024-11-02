@@ -1,4 +1,5 @@
-import knex from '../../config/knex.config';import { IProduct, ISellingProduct } from './product.model';
+import knex from '../../config/knex.config';
+import { IProduct, ISellingProduct } from './product.model';
 
 export const fetchById = async (productId: number): Promise<IProduct> => {
   return await knex('products')
@@ -70,5 +71,5 @@ export const update = async (
 };
 
 export const remove = async (productId: number) => {
-  return await knex('users').where('id', productId).delete();
+  return await knex('products').delete().where('id', productId);
 };

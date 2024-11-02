@@ -32,6 +32,7 @@ router
     verifyToken,
     joiValidationMiddleware(updatProductSchema),
     ProductController.patchProduct,
-  );
+  )
+  .delete(ProductController.deleteProduct);
 
 export default router;

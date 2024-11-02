@@ -96,3 +96,10 @@ export const patchProduct = async (
 
   return await ProductDAO.update(updatedProduct, productId);
 };
+
+export const deleteProduct = async (productId: number) => {
+  const isProductAvailable = await ProductDAO.fetchById(productId);
+  if (!isProductAvailable) throw new Error(productErrorMessages.NOT_FOUND);
+
+  return ProductDAO.remove(productId);
+};

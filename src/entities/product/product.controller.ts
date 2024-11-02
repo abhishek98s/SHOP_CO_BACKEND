@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';import { StatusCodes } from 'http-status-codes';
+import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { productErrorMessages } from './constants/productErrorMessages';
 import * as ProductService from './product.service';
 import { IProductUser } from './product.model';
@@ -178,6 +179,24 @@ export const patchProduct = async (req: Request, res: Response) => {
       .json({ success: true, message: productSuccessMessages.PATCH_SUCCESS });
 
     // update the databsae witht productObj
+  } catch (error) {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: (error as Error).message });
+  }
+};
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  try {
+    const productId = parseInt(req.params.id);
+
+    if (!productId) throw new Error(productErrorMessages.MISSING_ID);
+
+    await ProductService.deleteProduct(productId);
+
+    return res
+      .status(StatusCodes.OK)
+      .json({ success: true, message: productSuccessMessages.DELETE_SUCCESS });
   } catch (error) {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
