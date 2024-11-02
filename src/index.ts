@@ -1,9 +1,10 @@
-import express from 'express';import cors from 'cors';
+import express from 'express';
+import cors from 'cors';
 import pathToSwaggerUi from 'swagger-ui-dist';
-
 import { config } from './config/config';
 import { swagger } from './swagger/swagger';
 import userRoutes from './entities/user/user.routes';
+import sizeRoutes from './entities/product_size/product_size.route';
 import authRoutes from './auth/auth.routes';
 import bodyParser from 'body-parser';
 
@@ -22,6 +23,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/size', sizeRoutes);
 app.use('/api/user', userRoutes);
 
 swagger(app);
