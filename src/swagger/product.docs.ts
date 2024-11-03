@@ -1,4 +1,5 @@
-import { swaggerExceptionMessages } from './constant/swaggerExceptionMessages';export const docs = {
+import { errorSchema } from './error.schema';
+export const docs = {
   '/product/new_arrival': {
     get: {
       tags: ['Product'],
@@ -30,10 +31,7 @@ import { swaggerExceptionMessages } from './constant/swaggerExceptionMessages';e
           },
         },
         '401': {
-          description: swaggerExceptionMessages[401],
-        },
-        '500': {
-          description: swaggerExceptionMessages[500],
+          ...errorSchema.UNAUTHORIZED,
         },
       },
     },
@@ -69,10 +67,7 @@ import { swaggerExceptionMessages } from './constant/swaggerExceptionMessages';e
           },
         },
         '401': {
-          description: swaggerExceptionMessages[401],
-        },
-        '500': {
-          description: swaggerExceptionMessages[500],
+          ...errorSchema.UNAUTHORIZED,
         },
       },
     },
@@ -184,11 +179,14 @@ import { swaggerExceptionMessages } from './constant/swaggerExceptionMessages';e
             },
           },
         },
-        '404': {
-          description: 'Product not found',
+        '400': {
+          ...errorSchema.BAD_REQUEST,
         },
-        '500': {
-          description: 'Internal server error',
+        '401': {
+          ...errorSchema.UNAUTHORIZED,
+        },
+        '413': {
+          ...errorSchema.PAYLOAD_TOO_LARGE,
         },
       },
     },
@@ -231,11 +229,14 @@ import { swaggerExceptionMessages } from './constant/swaggerExceptionMessages';e
             },
           },
         },
-        '404': {
-          description: 'Product not found',
+        '400': {
+          ...errorSchema.BAD_REQUEST,
         },
-        '500': {
-          description: 'Internal server error',
+        '401': {
+          ...errorSchema.UNAUTHORIZED,
+        },
+        '404': {
+          ...errorSchema.NOT_FOUND,
         },
       },
     },
@@ -340,11 +341,14 @@ import { swaggerExceptionMessages } from './constant/swaggerExceptionMessages';e
             },
           },
         },
-        '404': {
-          description: 'Product not found',
+        '400': {
+          ...errorSchema.BAD_REQUEST,
         },
-        '500': {
-          description: 'Internal server error',
+        '401': {
+          ...errorSchema.UNAUTHORIZED,
+        },
+        '404': {
+          ...errorSchema.NOT_FOUND,
         },
       },
     },
@@ -391,11 +395,14 @@ import { swaggerExceptionMessages } from './constant/swaggerExceptionMessages';e
             },
           },
         },
-        '404': {
-          description: 'Product not found',
+        '400': {
+          ...errorSchema.BAD_REQUEST,
         },
-        '500': {
-          description: 'Internal server error',
+        '401': {
+          ...errorSchema.UNAUTHORIZED,
+        },
+        '404': {
+          ...errorSchema.NOT_FOUND,
         },
       },
     },

@@ -1,3 +1,4 @@
+import { errorSchema } from './error.schema';
 export const docs = {
   '/user': {
     post: {
@@ -42,6 +43,18 @@ export const docs = {
                 },
               },
             },
+          },
+          '400': {
+            ...errorSchema.BAD_REQUEST,
+          },
+          '401': {
+            ...errorSchema.UNAUTHORIZED,
+          },
+          '409': {
+            ...errorSchema.CONFLICT,
+          },
+          '413': {
+            ...errorSchema.BAD_REQUEST,
           },
         },
       },
@@ -96,6 +109,12 @@ export const docs = {
               },
             },
           },
+        },
+        '401': {
+          ...errorSchema.UNAUTHORIZED,
+        },
+        '404': {
+          ...errorSchema.NOT_FOUND,
         },
       },
     },
@@ -167,6 +186,18 @@ export const docs = {
             },
           },
         },
+        '400': {
+          ...errorSchema.BAD_REQUEST,
+        },
+        '401': {
+          ...errorSchema.UNAUTHORIZED,
+        },
+        '404': {
+          ...errorSchema.NOT_FOUND,
+        },
+        '413': {
+          ...errorSchema.PAYLOAD_TOO_LARGE,
+        },
       },
     },
     delete: {
@@ -217,6 +248,15 @@ export const docs = {
               },
             },
           },
+        },
+        '401': {
+          ...errorSchema.UNAUTHORIZED,
+        },
+        '404': {
+          ...errorSchema.NOT_FOUND,
+        },
+        '413': {
+          ...errorSchema.PAYLOAD_TOO_LARGE,
         },
       },
     },
