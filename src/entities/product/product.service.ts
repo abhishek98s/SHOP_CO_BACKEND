@@ -1,7 +1,9 @@
+import { StatusCodes } from 'http-status-codes';
 import { IProduct, IProductUser } from './product.model';
 import * as ProductDAO from './product.repository';
 import * as ImageService from '../image/image.service';
 import { productErrorMessages } from './constants/productErrorMessages';
+import { customHttpError } from '../../utils/customErrorHandler';
 export const getTopSellingProducts = async () => {
   return await ProductDAO.fetchTopSellingProducts();
 };
@@ -11,7 +13,15 @@ export const getNewSellingProducts = async () => {
 };
 
 export const getProductDetail = async (productId: number) => {
-  return await ProductDAO.fetchProductDetail(productId);
+  const product = await ProductDAO.fetchProductDetail(productId);
+
+  if (!product)
+    throw new customHttpError(
+      StatusCodes.NOT_FOUND,
+      productErrorMessages.NOT_FOUND,
+    );
+
+  return product;
 };
 
 export const postProduct = async (
@@ -63,7 +73,11 @@ export const postProduct = async (
 
   const product = await ProductDAO.create(productObj);
 
-  if (!product.productId) throw new Error(productErrorMessages.POST_FAILED);
+  if (!product.productId)
+    throw new customHttpError(
+      StatusCodes.REQUEST_TOO_LONG,
+      productErrorMessages.POST_FAILED,
+    );
 
   return;
 };
@@ -77,7 +91,11 @@ export const patchProduct = async (
   imageName?: string,
 ) => {
   const currentProduct = await ProductDAO.fetchById(productId);
-  if (!currentProduct) throw new Error(productErrorMessages.NOT_FOUND);
+  if (!currentProduct)
+    throw new customHttpError(
+      StatusCodes.NOT_FOUND,
+      productErrorMessages.NOT_FOUND,
+    );
 
   let image_id;
 
@@ -99,7 +117,11 @@ export const patchProduct = async (
 
 export const deleteProduct = async (productId: number) => {
   const isProductAvailable = await ProductDAO.fetchById(productId);
-  if (!isProductAvailable) throw new Error(productErrorMessages.NOT_FOUND);
+  if (!isProductAvailable)
+    throw new customHttpError(
+      StatusCodes.NOT_FOUND,
+      productErrorMessages.NOT_FOUND,
+    );
 
   return ProductDAO.remove(productId);
 };

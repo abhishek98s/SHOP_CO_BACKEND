@@ -1,8 +1,11 @@
 import bcrypt from 'bcrypt';
+import { StatusCodes } from 'http-status-codes';
+
 import { userExceptionMessages } from './constant/userExceptionMessages';
 import * as UserDAO from './user.repository';
 import * as ImageService from '../image/image.service';
 import { IReturnUser, IUpdateUser, IUser } from './user.model';
+import { customHttpError } from '../../utils/customErrorHandler';
 
 /**
  * The function `getUserById` retrieves a user from a database based on their ID and returns it.
@@ -13,7 +16,11 @@ import { IReturnUser, IUpdateUser, IUser } from './user.model';
 export const getUserByEmail = async (email: string) => {
   const user: IUser = await UserDAO.findUserByEmail(email);
 
-  if (!user) throw new Error(userExceptionMessages.USER_NOT_FOUND);
+  if (!user)
+    throw new customHttpError(
+      StatusCodes.NOT_FOUND,
+      userExceptionMessages.USER_NOT_FOUND,
+    );
 
   return user;
 };
@@ -27,7 +34,11 @@ export const getUserByEmail = async (email: string) => {
 export const getUserById = async (userId: number) => {
   const user: IReturnUser = await UserDAO.fetchById(userId);
 
-  if (!user) throw new Error(userExceptionMessages.USER_NOT_FOUND);
+  if (!user)
+    throw new customHttpError(
+      StatusCodes.NOT_FOUND,
+      userExceptionMessages.USER_NOT_FOUND,
+    );
 
   return user;
 };
@@ -64,18 +75,24 @@ export const addUser = async (
       password: hashedPassword,
     });
 
-    if (!user.userID) throw new Error(userExceptionMessages.CREATE_FAILED);
+    if (!user!.userID)
+      throw new customHttpError(
+        StatusCodes.REQUEST_TOO_LONG,
+        userExceptionMessages.CREATE_FAILED,
+      );
 
-    const { userID } = user;
+    const userID = user?.userID;
 
-    return await UserDAO.fetchById(userID);
+    return await UserDAO.fetchById(userID!);
   } catch (error) {
     const err = error as Error;
     if (err.message === userExceptionMessages.DUPLICATE_EMAIL) {
       // Handle duplicate email error specifically
-      throw new Error(userExceptionMessages.DUPLICATE_EMAIL);
+      throw new customHttpError(
+        StatusCodes.CONFLICT,
+        userExceptionMessages.DUPLICATE_EMAIL,
+      );
     }
-    throw new Error(userExceptionMessages.CREATE_FAILED); // Handle other errors
   }
 };
 
@@ -99,7 +116,10 @@ export const updateUser = async (
   let image_id = updatedUserData.image_id;
 
   if (!currentUser) {
-    throw new Error(userExceptionMessages.USER_NOT_FOUND);
+    throw new customHttpError(
+      StatusCodes.NOT_FOUND,
+      userExceptionMessages.USER_NOT_FOUND,
+    );
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -120,7 +140,11 @@ export const updateUser = async (
 
   const user = await UserDAO.update(updatedUser, userId);
 
-  if (!user) throw new Error(userExceptionMessages.UPDATE_FAILED);
+  if (!user)
+    throw new customHttpError(
+      StatusCodes.REQUEST_TOO_LONG,
+      userExceptionMessages.UPDATE_FAILED,
+    );
 
   return;
 };
@@ -133,10 +157,18 @@ export const updateUser = async (
  */
 export const removeUser = async (userId: number): Promise<void> => {
   const currentUser = await getUserById(userId);
-  if (!currentUser) throw new Error('User doesnot exist');
+  if (!currentUser)
+    throw new customHttpError(
+      StatusCodes.NOT_FOUND,
+      userExceptionMessages.USER_NOT_FOUND,
+    );
 
   const user = await UserDAO.remove(userId);
-  if (!user) throw new Error(userExceptionMessages.DELETE_FAILED);
+  if (!user)
+    throw new customHttpError(
+      StatusCodes.REQUEST_TOO_LONG,
+      userExceptionMessages.DELETE_FAILED,
+    );
 
   return;
 };

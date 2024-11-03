@@ -1,7 +1,10 @@
 import { QueryError } from 'mysql2';
+import { StatusCodes } from 'http-status-codes';
+
 import knex from '../../config/knex.config';
 import { IReturnUser, IUser } from './user.model';
 import { userExceptionMessages } from './constant/userExceptionMessages';
+import { customHttpError } from '../../utils/customErrorHandler';
 
 export const findUserByEmail = async (email: string): Promise<IUser> => {
   return await knex('users')
@@ -42,19 +45,23 @@ export const fetchById = async (userId: number): Promise<IReturnUser> => {
     .first();
 };
 
-export const create = async (userData: IUser) => {
+export const create = async (
+  userData: IUser,
+): Promise<{ userID: number } | null> => {
   try {
     const user = await knex('users').insert(userData).returning('id');
 
-    return { userID: user[0].id };
+    return { userID: user[0].id || 0 };
   } catch (error) {
     const err = error as QueryError;
 
     if (err.code === '23505') {
-      throw new Error(userExceptionMessages.DUPLICATE_EMAIL);
+      throw new customHttpError(
+        StatusCodes.CONFLICT,
+        userExceptionMessages.DUPLICATE_EMAIL,
+      );
     }
-
-    throw new Error(userExceptionMessages.CREATE_FAILED);
+    return null;
   }
 };
 

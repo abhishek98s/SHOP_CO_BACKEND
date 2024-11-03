@@ -1,5 +1,5 @@
-import express from 'express';
-import cors from 'cors';
+import express from 'express';import cors from 'cors';
+import 'express-async-errors';
 import pathToSwaggerUi from 'swagger-ui-dist';
 import bodyParser from 'body-parser';
 
@@ -11,7 +11,7 @@ import userRoutes from './entities/user/user.routes';
 
 import productRoutes from './entities/product/product.routes';
 import authRoutes from './auth/auth.routes';
-import errorHandler from './middleware/errorHandler';
+import customErrorHandler from './middleware/errorHandler';
 
 const app = express();
 const port = config.app.port;
@@ -33,7 +33,7 @@ app.get('/', (request, response) => {
   response.send('Hello world');
 });
 
-app.use(errorHandler);
+app.use(customErrorHandler);
 app.use(notFoundHandler);
 
 app.listen(port, () => {

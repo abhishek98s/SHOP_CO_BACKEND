@@ -1,9 +1,15 @@
-import { imageExceptionMessages } from './constant/imageExceptionMessages';
+import { StatusCodes } from 'http-status-codes';import { imageExceptionMessages } from './constant/imageExceptionMessages';
 import * as ImageDAO from './image.repository';
 import { IImage } from './image.model';
+import { customHttpError } from '../../utils/customErrorHandler';
+
 export const findImage = async (imageId: number): Promise<IImage> => {
   const image: IImage = await ImageDAO.fetchById(imageId);
-  if (!image) throw new Error(imageExceptionMessages.IMAGE_NOT_FOUND);
+  if (!image)
+    throw new customHttpError(
+      StatusCodes.NOT_FOUND,
+      imageExceptionMessages.IMAGE_NOT_FOUND,
+    );
 
   return image;
 };
@@ -44,17 +50,29 @@ export const updateImage = async (
 
   const image = await ImageDAO.update(updatedImage, imageId);
 
-  if (!image) throw new Error(imageExceptionMessages.UPLOAD_FAILED);
+  if (!image)
+    throw new customHttpError(
+      StatusCodes.REQUEST_TOO_LONG,
+      imageExceptionMessages.UPLOAD_FAILED,
+    );
 
   return;
 };
 
 export const removeImage = async (imageId: number): Promise<void> => {
   const image = await ImageDAO.fetchById(imageId);
-  if (!image) throw new Error(imageExceptionMessages.IMAGE_NOT_FOUND);
+  if (!image)
+    throw new customHttpError(
+      StatusCodes.NOT_FOUND,
+      imageExceptionMessages.IMAGE_NOT_FOUND,
+    );
 
   const removeImage = await ImageDAO.remove(imageId);
-  if (!removeImage) throw new Error(imageExceptionMessages.DELETE_FAILED);
+  if (!removeImage)
+    throw new customHttpError(
+      StatusCodes.REQUEST_TOO_LONG,
+      imageExceptionMessages.DELETE_FAILED,
+    );
 
   return;
 };
