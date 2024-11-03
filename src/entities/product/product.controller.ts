@@ -104,6 +104,12 @@ export const postProduct = async (req: Request, res: Response) => {
 export const patchProduct = async (req: Request, res: Response) => {
   const productId = parseInt(req.params.id);
 
+  if (!productId)
+    throw new customHttpError(
+      StatusCodes.BAD_REQUEST,
+      productErrorMessages.MISSING_ID,
+    );
+
   const {
     name,
     description,

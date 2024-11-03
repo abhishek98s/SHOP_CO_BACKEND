@@ -1,5 +1,4 @@
-import { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
+import { Request, Response } from 'express';import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import { StatusCodes } from 'http-status-codes';
@@ -53,7 +52,7 @@ export const registerHandler = async (req: Request, res: Response) => {
 
   if (!validator.isEmail(email)) {
     throw new customHttpError(
-      StatusCodes.NOT_FOUND,
+      StatusCodes.BAD_REQUEST,
       authExceptionMessages.INVALID_EMAIL,
     );
   }
