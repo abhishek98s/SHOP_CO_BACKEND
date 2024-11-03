@@ -1,4 +1,6 @@
-import { Request, Response } from 'express';import validator from 'validator';
+import { Request, Response } from 'express';
+import validator from 'validator';
+import { StatusCodes } from 'http-status-codes';
 
 import { userExceptionMessages } from './constant/userExceptionMessages';
 import { userSucessMessages } from './constant/userSucessMessages';
@@ -6,11 +8,16 @@ import { validateImageType } from '../../utils/image';
 import { IUser } from './user.model';
 
 import * as UserService from './user.service';
+import { customHttpError } from '../../utils/customErrorHandler';
 
 export const getUser = async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.id);
-    if (!userId) throw new Error(userExceptionMessages.INVALID_ID);
+    if (!userId)
+      throw new customHttpError(
+        StatusCodes.NOT_FOUND,
+        userExceptionMessages.INVALID_ID,
+      );
 
     const result = await UserService.getUserById(userId);
 
@@ -28,7 +35,10 @@ export const postUser = async (req: Request, res: Response) => {
     let isImagePresent = false;
 
     if (!username || !email || !password) {
-      throw new Error(userExceptionMessages.USER_CREDENTIALS_REQUIRED);
+      throw new customHttpError(
+        StatusCodes.BAD_REQUEST,
+        userExceptionMessages.USER_CREDENTIALS_REQUIRED,
+      );
     }
 
     if (
@@ -42,7 +52,10 @@ export const postUser = async (req: Request, res: Response) => {
         })
       )
     ) {
-      throw new Error(userExceptionMessages.INVALID_EMAIL_PASS);
+      throw new customHttpError(
+        StatusCodes.BAD_REQUEST,
+        userExceptionMessages.INVALID_EMAIL_PASS,
+      );
     }
 
     const userObj: IUser = {
@@ -87,13 +100,20 @@ export const patchUser = async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.id);
 
-    if (!userId) throw new Error(userExceptionMessages.INVALID_ID);
+    if (!userId)
+      throw new customHttpError(
+        StatusCodes.NOT_FOUND,
+        userExceptionMessages.INVALID_ID,
+      );
 
     const { username, password, user } = req.body;
     let isImage = false;
 
     if (!username || !password) {
-      throw new Error(userExceptionMessages.USERNAME_PASS_REQUIRED);
+      throw new customHttpError(
+        StatusCodes.NOT_FOUND,
+        userExceptionMessages.USERNAME_PASS_REQUIRED,
+      );
     }
 
     if (
@@ -104,7 +124,10 @@ export const patchUser = async (req: Request, res: Response) => {
         minNumbers: 1,
       })
     ) {
-      throw new Error(userExceptionMessages.PASS_VALIDATION);
+      throw new customHttpError(
+        StatusCodes.BAD_REQUEST,
+        userExceptionMessages.PASS_VALIDATION,
+      );
     }
 
     const updatedUser = {
@@ -146,7 +169,11 @@ export const deleteUser = async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.id);
 
-    if (!userId) throw new Error(userExceptionMessages.INVALID_ID);
+    if (!userId)
+      throw new customHttpError(
+        StatusCodes.NOT_FOUND,
+        userExceptionMessages.INVALID_ID,
+      );
 
     await UserService.removeUser(userId);
 

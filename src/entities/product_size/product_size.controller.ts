@@ -4,13 +4,17 @@ import { productSizeExceptionMessages } from './constant/productSizeExceptionMes
 import { productSizeSuccessMessages } from './constant/productSizeSuccessMessages';
 import * as ProductSizeService from './product_size.service';
 import { IProduct_size } from './product_size.model';
+import { customHttpError } from '../../utils/customErrorHandler';
 
 export const postProductSize = async (req: Request, res: Response) => {
   try {
     const { product_id, size_id, user } = req.body;
 
     if (!product_id || !size_id)
-      throw new Error(productSizeExceptionMessages.PRODUCT_SIZE_ID_REQUIRED);
+      throw new customHttpError(
+        StatusCodes.BAD_REQUEST,
+        productSizeExceptionMessages.PRODUCT_SIZE_ID_REQUIRED,
+      );
 
     const productSizeObj: IProduct_size = {
       product_id,

@@ -1,7 +1,10 @@
-import { Request, Response } from 'express';import { StatusCodes } from 'http-status-codes';import * as ImageService from './image.service';
+import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import * as ImageService from './image.service';
 import { imageExceptionMessages } from './constant/imageExceptionMessages';
 import { imageSuccessMessages } from './constant/imageSuccessMessages';
 import { validateImageType } from '../../utils/image';
+import { customHttpError } from '../../utils/customErrorHandler';
 
 /**
  * The function `getImage` is an asynchronous function that handles a request to retrieve an image by
@@ -19,7 +22,12 @@ import { validateImageType } from '../../utils/image';
 export const getImage = async (req: Request, res: Response) => {
   try {
     const imageId: number = parseInt(req.params.id);
-    if (!imageId) throw new Error(imageExceptionMessages.INVALID_ID);
+
+    if (!imageId)
+      throw new customHttpError(
+        StatusCodes.NOT_FOUND,
+        imageExceptionMessages.INVALID_ID,
+      );
 
     const result = await ImageService.findImage(imageId);
 
@@ -46,7 +54,10 @@ export const getImage = async (req: Request, res: Response) => {
 export const postImage = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
-      throw new Error(imageExceptionMessages.FILE_REQUIRED);
+      throw new customHttpError(
+        StatusCodes.BAD_REQUEST,
+        imageExceptionMessages.FILE_REQUIRED,
+      );
     }
 
     validateImageType(req.file!.originalname);
@@ -85,7 +96,10 @@ export const patchImage = async (req: Request, res: Response) => {
     const imageId: number = parseInt(req.params.id);
 
     if (!req.file) {
-      throw new Error(imageExceptionMessages.FILE_REQUIRED);
+      throw new customHttpError(
+        StatusCodes.BAD_REQUEST,
+        imageExceptionMessages.FILE_REQUIRED,
+      );
     }
 
     const { user } = req.body;
@@ -127,7 +141,12 @@ export const patchImage = async (req: Request, res: Response) => {
 export const deleteImage = async (req: Request, res: Response) => {
   try {
     const imageId: number = parseInt(req.params.id);
-    if (!imageId) throw new Error(imageExceptionMessages.INVALID_ID);
+
+    if (!imageId)
+      throw new customHttpError(
+        StatusCodes.NOT_FOUND,
+        imageExceptionMessages.INVALID_ID,
+      );
 
     await ImageService.removeImage(imageId);
 

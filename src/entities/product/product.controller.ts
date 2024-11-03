@@ -4,6 +4,7 @@ import { productErrorMessages } from './constants/productErrorMessages';
 import * as ProductService from './product.service';
 import { IProductUser } from './product.model';
 import { productSuccessMessages } from './constants/productSuccessMessages';
+import { customHttpError } from '../../utils/customErrorHandler';
 export const getNewSellingProducts = async (req: Request, res: Response) => {
   try {
     const result = await ProductService.getNewSellingProducts();
@@ -30,7 +31,11 @@ export const getTopSellingProducts = async (req: Request, res: Response) => {
 export const getProductDetail = async (req: Request, res: Response) => {
   try {
     const productId = parseInt(req.params.id);
-    if (!productId) throw new Error(productErrorMessages.MISSING_ID);
+    if (!productId)
+      throw new customHttpError(
+        StatusCodes.BAD_REQUEST,
+        productErrorMessages.MISSING_ID,
+      );
 
     const result = await ProductService.getProductDetail(productId);
 
@@ -61,7 +66,10 @@ export const postProduct = async (req: Request, res: Response) => {
     let isImage = false;
 
     if (!name || !description || !rating || !price || !stock_quantity) {
-      throw new Error(productErrorMessages.INPUT_REQUIRED);
+      throw new customHttpError(
+        StatusCodes.BAD_REQUEST,
+        productErrorMessages.INPUT_REQUIRED,
+      );
     }
 
     const productObj: IProductUser = {
@@ -190,7 +198,11 @@ export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const productId = parseInt(req.params.id);
 
-    if (!productId) throw new Error(productErrorMessages.MISSING_ID);
+    if (!productId)
+      throw new customHttpError(
+        StatusCodes.BAD_REQUEST,
+        productErrorMessages.MISSING_ID,
+      );
 
     await ProductService.deleteProduct(productId);
 

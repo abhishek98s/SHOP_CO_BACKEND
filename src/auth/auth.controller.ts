@@ -1,5 +1,4 @@
-import { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
+import { Request, Response } from 'express';import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import { StatusCodes } from 'http-status-codes';
@@ -7,13 +6,17 @@ import { StatusCodes } from 'http-status-codes';
 import { authExceptionMessages } from './constant/authExceptionMessages';
 import { addUser, getUserByEmail } from '../entities/user/user.service';
 import { authSuccessMessages } from './constant/authSuccessMessages';
+import { customHttpError } from '../utils/customErrorHandler';
 
 export const loginHandler = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      throw new Error(authExceptionMessages.EMAIL_PASS_REQUIRED);
+      throw new customHttpError(
+        StatusCodes.BAD_REQUEST,
+        authExceptionMessages.EMAIL_PASS_REQUIRED,
+      );
     }
 
     const user = await getUserByEmail(email);
@@ -26,7 +29,10 @@ export const loginHandler = async (req: Request, res: Response) => {
     );
 
     if (!passordMatched) {
-      throw new Error(authExceptionMessages.INVALID_ID_CREDENTIALS);
+      throw new customHttpError(
+        StatusCodes.UNAUTHORIZED,
+        authExceptionMessages.INVALID_ID_CREDENTIALS,
+      );
     }
 
     const token = jwt.sign(
@@ -48,11 +54,17 @@ export const registerHandler = async (req: Request, res: Response) => {
     let isImage = false;
 
     if (!username || !email || !password || !phone) {
-      throw new Error(authExceptionMessages.USER_CREDENTIALS);
+      throw new customHttpError(
+        StatusCodes.BAD_REQUEST,
+        authExceptionMessages.USER_CREDENTIALS,
+      );
     }
 
     if (!validator.isEmail(email)) {
-      throw new Error(authExceptionMessages.INVALID_EMAIL);
+      throw new customHttpError(
+        StatusCodes.NOT_FOUND,
+        authExceptionMessages.INVALID_EMAIL,
+      );
     }
 
     if (
@@ -63,7 +75,10 @@ export const registerHandler = async (req: Request, res: Response) => {
         minNumbers: 1,
       })
     ) {
-      throw new Error(authExceptionMessages.PASS_VALIDATION);
+      throw new customHttpError(
+        StatusCodes.BAD_REQUEST,
+        authExceptionMessages.PASS_VALIDATION,
+      );
     }
 
     const userObj = {

@@ -1,13 +1,32 @@
-import { HttpStatusCode } from 'axios';
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { customHttpError } from '../utils/customErrorHandler';
 
-const errorHandler = (err: { status: number }, req: Request, res: Response, next: NextFunction) => {
+const customErrorHandler = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  // Handle custom HTTP errors
+  if (err instanceof customHttpError) {
+    return res
+      .status(err.statusCode)
+      .json({ success: false, message: err.message });
+  }
 
-    if (err.status === 400 && err instanceof SyntaxError && 'body' in err) {
-        return res.status(HttpStatusCode.BadRequest).json({ success: false, message: 'Invalid JSON format' });
-    }
+  // Handle SyntaxError for invalid JSON
+  if (err instanceof SyntaxError && 'body' in err) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ success: false, message: 'Invalid JSON format' });
+  }
 
-    return res.status(HttpStatusCode.InternalServerError).json({ success: false, message: 'Internal Server Error' });
+  // Handle generic errors
+  console.error(err); // Log the error for debugging
+  return res
+    .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    .json({ success: false, message: 'Internal Server Error' });
 };
 
-export default errorHandler;
+export default customErrorHandler;
