@@ -16,9 +16,14 @@ import { swaggerExceptionMessages } from './constant/swaggerExceptionMessages';e
           content: {
             'application/json': {
               schema: {
-                type: 'array',
-                items: {
-                  $ref: '#/components/schemas/ProductResponse',
+                properties: {
+                  success: { type: 'boolean' },
+                  data: {
+                    type: 'array',
+                    items: {
+                      $ref: '#/components/schemas/ProductResponse',
+                    },
+                  },
                 },
               },
             },
@@ -50,9 +55,14 @@ import { swaggerExceptionMessages } from './constant/swaggerExceptionMessages';e
           content: {
             'application/json': {
               schema: {
-                type: 'array',
-                items: {
-                  $ref: '#/components/schemas/ProductResponse',
+                properties: {
+                  success: { type: 'boolean' },
+                  data: {
+                    type: 'array',
+                    items: {
+                      $ref: '#/components/schemas/ProductResponse',
+                    },
+                  },
                 },
               },
             },
@@ -82,59 +92,64 @@ import { swaggerExceptionMessages } from './constant/swaggerExceptionMessages';e
         content: {
           'multipart/form-data': {
             schema: {
-              type: 'object',
               properties: {
-                name: {
-                  type: 'string',
-                  description: 'Name of the product',
-                },
-                description: {
-                  type: 'string',
-                  description: 'Description of the product',
-                },
-                rating: {
-                  type: 'number',
-                  format: 'float',
-                  description: 'Rating of the product',
-                },
-                price: {
-                  type: 'number',
-                  format: 'float',
-                  description: 'Price of the product',
-                },
-                stock_quantity: {
-                  type: 'integer',
-                  description: 'Quantity of the product in stock',
-                },
-                discount: {
-                  type: 'number',
-                  format: 'float',
-                  description: 'Discount percentage on the product',
-                },
-                discounted_price: {
-                  type: 'number',
-                  format: 'float',
-                  description: 'Price after discount',
-                },
-                category: {
-                  type: 'string',
-                  enum: ['top_selling', 'new_arrival'],
-                  description: 'Category of the product',
-                },
-                style: {
-                  type: 'string',
-                  enum: ['casual', 'formal', 'party', 'gym'],
-                  description: 'Style of the product',
-                },
-                type: {
-                  type: 'string',
-                  enum: ['t-shirts', 'shorts', 'shirts', 'hoodie'],
-                  description: 'Type of the product',
-                },
-                shop_co_image: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'File to upload (e.g., product image)',
+                success: { type: 'boolean' },
+                data: {
+                  type: 'object',
+                  properties: {
+                    name: {
+                      type: 'string',
+                      description: 'Name of the product',
+                    },
+                    description: {
+                      type: 'string',
+                      description: 'Description of the product',
+                    },
+                    rating: {
+                      type: 'number',
+                      format: 'float',
+                      description: 'Rating of the product',
+                    },
+                    price: {
+                      type: 'number',
+                      format: 'float',
+                      description: 'Price of the product',
+                    },
+                    stock_quantity: {
+                      type: 'integer',
+                      description: 'Quantity of the product in stock',
+                    },
+                    discount: {
+                      type: 'number',
+                      format: 'float',
+                      description: 'Discount percentage on the product',
+                    },
+                    discounted_price: {
+                      type: 'number',
+                      format: 'float',
+                      description: 'Price after discount',
+                    },
+                    category: {
+                      type: 'string',
+                      enum: ['top_selling', 'new_arrival'],
+                      description: 'Category of the product',
+                    },
+                    style: {
+                      type: 'string',
+                      enum: ['casual', 'formal', 'party', 'gym'],
+                      description: 'Style of the product',
+                    },
+                    type: {
+                      type: 'string',
+                      enum: ['t-shirts', 'shorts', 'shirts', 'hoodie'],
+                      description: 'Type of the product',
+                    },
+                    shop_co_image: {
+                      type: 'string',
+                      format: 'binary',
+                      description: 'File to upload (e.g., product image)',
+                    },
+                  },
                 },
               },
               required: [
@@ -206,7 +221,12 @@ import { swaggerExceptionMessages } from './constant/swaggerExceptionMessages';e
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Product',
+                properties: {
+                  success: { type: 'boolean' },
+                  data: {
+                    $ref: '#/components/schemas/Product',
+                  },
+                },
               },
             },
           },
@@ -302,6 +322,29 @@ import { swaggerExceptionMessages } from './constant/swaggerExceptionMessages';e
               },
             },
           },
+        },
+      },
+      responses: {
+        '200': {
+          description: 'Updated Successfully',
+          content: {
+            'application/json': {
+              schema: {
+                properties: {
+                  success: { type: 'boolean' },
+                  data: {
+                    $ref: '#/components/schemas/Product',
+                  },
+                },
+              },
+            },
+          },
+        },
+        '404': {
+          description: 'Product not found',
+        },
+        '500': {
+          description: 'Internal server error',
         },
       },
     },
