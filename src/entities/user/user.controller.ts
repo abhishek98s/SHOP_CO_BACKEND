@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';import validator from 'validator';
+import { Request, Response } from 'express';
+import validator from 'validator';
 import { StatusCodes } from 'http-status-codes';
 
 import { userExceptionMessages } from './constant/userExceptionMessages';
@@ -97,7 +98,7 @@ export const patchUser = async (req: Request, res: Response) => {
 
   if (!username || !password) {
     throw new customHttpError(
-      StatusCodes.NOT_FOUND,
+      StatusCodes.BAD_REQUEST,
       userExceptionMessages.USERNAME_PASS_REQUIRED,
     );
   }
