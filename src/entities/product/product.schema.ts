@@ -1,5 +1,4 @@
-import joi, { Schema } from 'joi';
-import { jwtSchema } from '../../utils/jwt.schema';
+import joi, { Schema } from 'joi';import { jwtSchema } from '../../utils/jwt.schema';
 export const productSchema: Schema = joi.object().keys({
   name: joi.string().required(),
   description: joi.string().required(),
@@ -27,6 +26,24 @@ export const productSchema: Schema = joi.object().keys({
     .valid('t-shirts', 'shorts', 'shirts', 'hoodie')
     .required()
     .default('casual'),
+  size: joi
+    .array()
+    .items(
+      joi
+        .string()
+        .insensitive()
+        .valid(
+          'XX-Small',
+          'X-Small',
+          'Small',
+          'Medium',
+          'Large',
+          'X-Large',
+          'XX-Large',
+        ),
+    )
+    .min(1)
+    .required(),
 
   ...jwtSchema,
 });
@@ -55,6 +72,23 @@ export const updatProductSchema: Schema = joi.object().keys({
     .insensitive()
     .valid('t-shirts', 'shorts', 'shirts', 'hoodie')
     .default('casual'),
+  size: joi
+    .array()
+    .items(
+      joi
+        .string()
+        .insensitive()
+        .valid(
+          'XX-Small',
+          'X-Small',
+          'Small',
+          'Medium',
+          'Large',
+          'X-Large',
+          'XX-Large',
+        ),
+    )
+    .min(1),
 
   ...jwtSchema,
 });

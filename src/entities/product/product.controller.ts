@@ -43,6 +43,7 @@ export const postProduct = async (req: Request, res: Response) => {
     category,
     style,
     type,
+    size,
     user,
   } = req.body;
   let isImage = false;
@@ -74,10 +75,11 @@ export const postProduct = async (req: Request, res: Response) => {
     await ProductService.postProduct(
       isImage,
       productObj,
-      user.name,
+      user.username,
       category,
       style,
       type,
+      size,
     );
   } else {
     isImage = true;
@@ -87,10 +89,11 @@ export const postProduct = async (req: Request, res: Response) => {
     await ProductService.postProduct(
       isImage,
       productObj,
-      user.name,
+      user.username,
       category,
       style,
       type,
+      size,
       imagePath,
       imageName,
     );

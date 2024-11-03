@@ -1,4 +1,5 @@
-export interface ISellingProduct {  id?: number;
+export interface ISellingProduct {
+  id?: number;
   name: string;
   rating: number | 0;
   price: number;
@@ -48,3 +49,12 @@ export interface IProductUser {
   created_by?: string;
   updated_by?: string;
 }
+
+export type TSize =
+  | 'XX-Small'
+  | 'X-Small'
+  | 'Small'
+  | 'Medium'
+  | 'Large'
+  | 'X-Large'
+  | 'XX-Large';

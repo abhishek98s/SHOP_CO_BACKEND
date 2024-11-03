@@ -1,5 +1,4 @@
-import knex from '../../config/knex.config';
-import { IProduct, ISellingProduct } from './product.model';
+import knex from '../../config/knex.config';import { IProduct, ISellingProduct } from './product.model';
 export const fetchById = async (productId: number): Promise<IProduct> => {
   return await knex('products')
     .select('name', 'image_id')
@@ -60,8 +59,6 @@ export const fetchProductDetail = async (productId: number) => {
 export const create = async (
   productData: IProduct,
 ): Promise<{ productId: number }> => {
-  console.log(productData);
-
   const product = await knex('products').insert(productData).returning('id');
   return { productId: product[0].id };
 };

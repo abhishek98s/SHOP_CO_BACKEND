@@ -1,9 +1,10 @@
-import { StatusCodes } from 'http-status-codes';
-import { IProduct, IProductUser } from './product.model';
+import { StatusCodes } from 'http-status-codes';import { IProduct, IProductUser, TSize } from './product.model';
 import * as ProductDAO from './product.repository';
 import * as ImageService from '../image/image.service';
+import * as ProductSizeService from '../product_size/product_size.service';
 import { productErrorMessages } from './constants/productErrorMessages';
 import { customHttpError } from '../../utils/customErrorHandler';
+import { IProduct_size } from '../product_size/product_size.model';
 export const getTopSellingProducts = async () => {
   return await ProductDAO.fetchTopSellingProducts();
 };
@@ -31,6 +32,7 @@ export const postProduct = async (
   categoryName: 'top_selling' | 'new_arrival',
   stylesName: 'casual' | 'formal' | 'party' | 'gym',
   productType: 't-shirts' | 'shorts' | 'shirts' | 'hoodie',
+  sizeArr: TSize[],
   imagePath?: string,
   imageName?: string,
 ) => {
@@ -78,6 +80,29 @@ export const postProduct = async (
       StatusCodes.REQUEST_TOO_LONG,
       productErrorMessages.POST_FAILED,
     );
+
+  for (const size of sizeArr) {
+    const sizeMap: { [key: string]: number } = {
+      'xx-small': 1,
+      'x-small': 2,
+      small: 3,
+      medium: 4,
+      large: 5,
+      'x-large': 6,
+      'xx-large': 7,
+    };
+
+    const lowerSize = size.toLowerCase();
+    const sizeId: number = sizeMap[lowerSize];
+
+    const productSizeObj: IProduct_size = {
+      product_id: product.productId,
+      size_id: sizeId,
+      created_by: username,
+      updated_by: username,
+    };
+    await ProductSizeService.postProductSize(productSizeObj);
+  }
 
   return;
 };
