@@ -124,6 +124,7 @@ export const patchProduct = async (req: Request, res: Response) => {
     category,
     style,
     type,
+    size,
     user,
   } = req.body;
 
@@ -152,6 +153,7 @@ export const patchProduct = async (req: Request, res: Response) => {
       productObj,
       productId,
       user.username,
+      size,
     );
   } else {
     isImage = true;
@@ -162,6 +164,7 @@ export const patchProduct = async (req: Request, res: Response) => {
       productObj,
       productId,
       user.username,
+      size,
       imagePath,
       imageName,
     );

@@ -5,6 +5,7 @@ export interface ISellingProduct {
   price: number;
   discount?: number;
   discounted_price?: number;
+  sizes: string;
 
   image_url: string;
 }
@@ -23,7 +24,6 @@ export interface IProduct {
 
   image_id: number | null;
   category_id: number;
-  size_id: number;
   style_id: number;
   type_id: number;
 

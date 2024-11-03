@@ -1,12 +1,25 @@
-import { StatusCodes } from 'http-status-codes';import { IProduct, IProductUser, TSize } from './product.model';
+import { StatusCodes } from 'http-status-codes';import {
+  IProduct,
+  IProductUser,
+  ISellingProduct,
+  TSize,
+} from './product.model';
 import * as ProductDAO from './product.repository';
 import * as ImageService from '../image/image.service';
 import * as ProductSizeService from '../product_size/product_size.service';
 import { productErrorMessages } from './constants/productErrorMessages';
 import { customHttpError } from '../../utils/customErrorHandler';
 import { IProduct_size } from '../product_size/product_size.model';
+
 export const getTopSellingProducts = async () => {
-  return await ProductDAO.fetchTopSellingProducts();
+  const products = await ProductDAO.fetchTopSellingProducts();
+
+  return products.map((product: ISellingProduct) => {
+    return {
+      ...product,
+      sizes: product.sizes ? product.sizes.split(',') : [],
+    };
+  });
 };
 
 export const getNewSellingProducts = async () => {
@@ -36,19 +49,19 @@ export const postProduct = async (
   imagePath?: string,
   imageName?: string,
 ) => {
-  const categoryMap = {
+  const categoryMap: { [key: string]: number } = {
     new_arrival: 1,
     top_selling: 2,
   };
 
-  const stylesMap = {
+  const stylesMap: { [key: string]: number } = {
     casual: 1,
     formal: 2,
     party: 3,
     gym: 4,
   };
 
-  const productTypeMap = {
+  const productTypeMap: { [key: string]: number } = {
     't-shirts': 1,
     shorts: 2,
     shirts: 3,
@@ -61,14 +74,17 @@ export const postProduct = async (
     image_id = await ImageService.saveImage(imagePath!, imageName!, username);
   }
 
+  console.log(
+    categoryMap[categoryName.toLowerCase()],
+    stylesMap[stylesName.toLowerCase()],
+    productTypeMap[productType.toLowerCase()],
+  );
   const productObj: IProduct = {
     ...productData,
 
-    category_id: categoryMap[categoryName] | 3,
-    style_id: stylesMap[stylesName] | 1,
-    type_id: productTypeMap[productType] | 1,
-
-    size_id: 1,
+    category_id: categoryMap[categoryName.toLowerCase()] || 3,
+    style_id: stylesMap[stylesName.toLowerCase()] || 1,
+    type_id: productTypeMap[productType.toLowerCase()] || 1,
 
     image_id,
   };
@@ -112,6 +128,7 @@ export const patchProduct = async (
   productData: Partial<IProduct>,
   productId: number,
   username: string,
+  sizeArr: TSize[],
   imagePath?: string,
   imageName?: string,
 ) => {
