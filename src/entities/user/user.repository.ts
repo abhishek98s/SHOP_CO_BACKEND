@@ -45,11 +45,13 @@ export const fetchById = async (userId: number): Promise<IReturnUser> => {
     .first();
 };
 
-export const create = async (userData: IUser) => {
+export const create = async (
+  userData: IUser,
+): Promise<{ userID: number } | null> => {
   try {
     const user = await knex('users').insert(userData).returning('id');
 
-    return { userID: user[0].id };
+    return { userID: user[0].id || 0 };
   } catch (error) {
     const err = error as QueryError;
 
@@ -59,6 +61,7 @@ export const create = async (userData: IUser) => {
         userExceptionMessages.DUPLICATE_EMAIL,
       );
     }
+    return null;
   }
 };
 

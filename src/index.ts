@@ -1,4 +1,5 @@
 import express from 'express';import cors from 'cors';
+import 'express-async-errors';
 import pathToSwaggerUi from 'swagger-ui-dist';
 import bodyParser from 'body-parser';
 

@@ -13,7 +13,15 @@ export const getNewSellingProducts = async () => {
 };
 
 export const getProductDetail = async (productId: number) => {
-  return await ProductDAO.fetchProductDetail(productId);
+  const product = await ProductDAO.fetchProductDetail(productId);
+
+  if (!product)
+    throw new customHttpError(
+      StatusCodes.NOT_FOUND,
+      productErrorMessages.NOT_FOUND,
+    );
+
+  return product;
 };
 
 export const postProduct = async (

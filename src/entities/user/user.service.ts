@@ -1,4 +1,5 @@
-import bcrypt from 'bcrypt';import { StatusCodes } from 'http-status-codes';
+import bcrypt from 'bcrypt';
+import { StatusCodes } from 'http-status-codes';
 
 import { userExceptionMessages } from './constant/userExceptionMessages';
 import * as UserDAO from './user.repository';
@@ -74,15 +75,15 @@ export const addUser = async (
       password: hashedPassword,
     });
 
-    if (!user.userID)
+    if (!user!.userID)
       throw new customHttpError(
         StatusCodes.REQUEST_TOO_LONG,
         userExceptionMessages.CREATE_FAILED,
       );
 
-    const { userID } = user;
+    const userID = user?.userID;
 
-    return await UserDAO.fetchById(userID);
+    return await UserDAO.fetchById(userID!);
   } catch (error) {
     const err = error as Error;
     if (err.message === userExceptionMessages.DUPLICATE_EMAIL) {

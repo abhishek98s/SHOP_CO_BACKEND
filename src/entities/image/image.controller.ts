@@ -20,24 +20,17 @@ import { customHttpError } from '../../utils/customErrorHandler';
  * image.
  */
 export const getImage = async (req: Request, res: Response) => {
-  try {
-    const imageId: number = parseInt(req.params.id);
+  const imageId: number = parseInt(req.params.id);
 
-    if (!imageId)
-      throw new customHttpError(
-        StatusCodes.NOT_FOUND,
-        imageExceptionMessages.INVALID_ID,
-      );
+  if (!imageId)
+    throw new customHttpError(
+      StatusCodes.NOT_FOUND,
+      imageExceptionMessages.INVALID_ID,
+    );
 
-    const result = await ImageService.findImage(imageId);
+  const result = await ImageService.findImage(imageId);
 
-    return res.status(StatusCodes.OK).json({ success: true, data: result });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: (error as Error).message,
-    });
-  }
+  return res.status(StatusCodes.OK).json({ success: true, data: result });
 };
 
 /**
@@ -52,32 +45,25 @@ export const getImage = async (req: Request, res: Response) => {
  * @returns a JSON response with the data property set to the result of the saveImage function.
  */
 export const postImage = async (req: Request, res: Response) => {
-  try {
-    if (!req.file) {
-      throw new customHttpError(
-        StatusCodes.BAD_REQUEST,
-        imageExceptionMessages.FILE_REQUIRED,
-      );
-    }
-
-    validateImageType(req.file!.originalname);
-
-    const { user } = req.body;
-
-    const imagePath = req.file!.path;
-    const imageName = req.file!.originalname;
-
-    await ImageService.saveImage(imagePath, imageName, user.username);
-
-    res
-      .status(StatusCodes.CREATED)
-      .json({ success: true, message: imageSuccessMessages.POST_SUCCESS });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: (error as Error).message,
-    });
+  if (!req.file) {
+    throw new customHttpError(
+      StatusCodes.BAD_REQUEST,
+      imageExceptionMessages.FILE_REQUIRED,
+    );
   }
+
+  validateImageType(req.file!.originalname);
+
+  const { user } = req.body;
+
+  const imagePath = req.file!.path;
+  const imageName = req.file!.originalname;
+
+  await ImageService.saveImage(imagePath, imageName, user.username);
+
+  res
+    .status(StatusCodes.CREATED)
+    .json({ success: true, message: imageSuccessMessages.POST_SUCCESS });
 };
 
 /**
@@ -92,39 +78,27 @@ export const postImage = async (req: Request, res: Response) => {
  * code if there is an error.
  */
 export const patchImage = async (req: Request, res: Response) => {
-  try {
-    const imageId: number = parseInt(req.params.id);
+  const imageId: number = parseInt(req.params.id);
 
-    if (!req.file) {
-      throw new customHttpError(
-        StatusCodes.BAD_REQUEST,
-        imageExceptionMessages.FILE_REQUIRED,
-      );
-    }
-
-    const { user } = req.body;
-
-    await ImageService.findImage(imageId);
-
-    const imagePath = req.file!.path;
-    const imageName = req.file!.originalname;
-
-    await ImageService.updateImage(
-      imagePath,
-      imageName,
-      user.username,
-      imageId,
+  if (!req.file) {
+    throw new customHttpError(
+      StatusCodes.BAD_REQUEST,
+      imageExceptionMessages.FILE_REQUIRED,
     );
-
-    res
-      .status(StatusCodes.OK)
-      .json({ success: true, message: imageSuccessMessages.UPDATE_SUCCESS });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: (error as Error).message,
-    });
   }
+
+  const { user } = req.body;
+
+  await ImageService.findImage(imageId);
+
+  const imagePath = req.file!.path;
+  const imageName = req.file!.originalname;
+
+  await ImageService.updateImage(imagePath, imageName, user.username, imageId);
+
+  res
+    .status(StatusCodes.OK)
+    .json({ success: true, message: imageSuccessMessages.UPDATE_SUCCESS });
 };
 
 /**
@@ -139,24 +113,17 @@ export const patchImage = async (req: Request, res: Response) => {
  * @returns a JSON response with the data property set to the result of the removeImage function.
  */
 export const deleteImage = async (req: Request, res: Response) => {
-  try {
-    const imageId: number = parseInt(req.params.id);
+  const imageId: number = parseInt(req.params.id);
 
-    if (!imageId)
-      throw new customHttpError(
-        StatusCodes.NOT_FOUND,
-        imageExceptionMessages.INVALID_ID,
-      );
+  if (!imageId)
+    throw new customHttpError(
+      StatusCodes.NOT_FOUND,
+      imageExceptionMessages.INVALID_ID,
+    );
 
-    await ImageService.removeImage(imageId);
+  await ImageService.removeImage(imageId);
 
-    res
-      .status(StatusCodes.OK)
-      .json({ success: true, message: imageSuccessMessages.DELETE_SUCCESS });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: (error as Error).message,
-    });
-  }
+  res
+    .status(StatusCodes.OK)
+    .json({ success: true, message: imageSuccessMessages.DELETE_SUCCESS });
 };
