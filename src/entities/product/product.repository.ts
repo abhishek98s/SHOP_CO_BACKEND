@@ -44,11 +44,6 @@ export const fetchNewSellingProducts = async (): Promise<ISellingProduct[]> => {
     .leftJoin('sizes', 'products_sizes.size_id', 'sizes.id')
     .where('products.category_id', 1)
     .groupBy('products.id', 'images.url');
-    .leftJoin('images', 'products.image_id', 'images.id')
-    .leftJoin('products_sizes', 'products.id', 'products_sizes.product_id')
-    .leftJoin('sizes', 'products_sizes.size_id', 'sizes.id')
-    .where('products.category_id', 1)
-    .groupBy('products.id', 'images.url');
 };
 
 export const fetchTopSellingProducts = async (): Promise<ISellingProduct[]> => {
@@ -63,14 +58,7 @@ export const fetchTopSellingProducts = async (): Promise<ISellingProduct[]> => {
       'images.url as image_url',
       // eslint-disable-next-line quotes
       knex.raw("STRING_AGG(sizes.name, ', ') as sizes"),
-      // eslint-disable-next-line quotes
-      knex.raw("STRING_AGG(sizes.name, ', ') as sizes"),
     )
-    .leftJoin('images', 'products.image_id', 'images.id')
-    .leftJoin('products_sizes', 'products.id', 'products_sizes.product_id')
-    .leftJoin('sizes', 'products_sizes.size_id', 'sizes.id')
-    .where('products.category_id', 2)
-    .groupBy('products.id', 'images.url');
     .leftJoin('images', 'products.image_id', 'images.id')
     .leftJoin('products_sizes', 'products.id', 'products_sizes.product_id')
     .leftJoin('sizes', 'products_sizes.size_id', 'sizes.id')
@@ -91,10 +79,17 @@ export const fetchProductDetail = async (productId: number) => {
       'images.url as image_url',
       'products.stock_quantity',
       'product_styles.name as style_name',
+
+      // eslint-disable-next-line quotes
+      knex.raw("STRING_AGG(sizes.name, ', ') as sizes"),
     )
     .leftJoin('images', 'products.id', 'images.id')
+    .leftJoin('products_sizes', 'products.id', 'products_sizes.product_id')
+    .leftJoin('sizes', 'products_sizes.size_id', 'sizes.id')
+
     .join('product_styles', 'products.style_id', 'product_styles.id')
     .where('products.id', productId)
+    .groupBy('products.id', 'images.url', 'product_styles.name')
     .first();
 };
 

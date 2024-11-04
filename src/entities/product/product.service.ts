@@ -1,5 +1,4 @@
-import { StatusCodes } from 'http-status-codes';
-import {
+import { StatusCodes } from 'http-status-codes';import {
   IProduct,
   IProductResponse,
   IProductUser,
@@ -29,7 +28,10 @@ export const getTopSellingProducts = async () => {
       sizes: product.sizes ? product.sizes.split(',') : [],
     };
   });
-  const products = await ProductDAO.fetchTopSellingProducts();
+};
+
+export const getNewSellingProducts = async () => {
+  const products = await ProductDAO.fetchNewSellingProducts();
 
   return products.map((product: ISellingProduct) => {
     return {
@@ -37,10 +39,6 @@ export const getTopSellingProducts = async () => {
       sizes: product.sizes ? product.sizes.split(',') : [],
     };
   });
-};
-
-export const getNewSellingProducts = async () => {
-  return await ProductDAO.fetchNewSellingProducts();
 };
 
 export const getProductDetail = async (productId: number) => {
@@ -52,7 +50,10 @@ export const getProductDetail = async (productId: number) => {
       productErrorMessages.NOT_FOUND,
     );
 
-  return product;
+  return {
+    ...product,
+    sizes: product.sizes ? product.sizes.split(',') : [],
+  };
 };
 
 export const postProduct = async (
