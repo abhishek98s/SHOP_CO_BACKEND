@@ -33,13 +33,13 @@ export const productSchema: Schema = joi.object().keys({
         .string()
         .insensitive()
         .valid(
-          'XX-Small',
-          'X-Small',
-          'Small',
-          'Medium',
-          'Large',
-          'X-Large',
-          'XX-Large',
+          'xx-small',
+          'x-small',
+          'small',
+          'medium',
+          'large',
+          'x-large',
+          'xx-large',
         ),
     )
     .min(1)
@@ -79,16 +79,24 @@ export const updatProductSchema: Schema = joi.object().keys({
         .string()
         .insensitive()
         .valid(
-          'XX-Small',
-          'X-Small',
-          'Small',
-          'Medium',
-          'Large',
-          'X-Large',
-          'XX-Large',
+          'xx-small',
+          'x-small',
+          'small',
+          'medium',
+          'large',
+          'x-large',
+          'xx-large',
         ),
     )
     .min(1),
 
   ...jwtSchema,
+});
+
+export const filterProductSchema: Schema = joi.object().keys({
+  minPrice: joi.string().required(),
+  maxPrice: joi.string().required(),
+  type: joi.string(),
+  style: joi.string().insensitive().valid('casual', 'formal', 'party', 'gym'),
+  sizes: joi.string(),
 });
