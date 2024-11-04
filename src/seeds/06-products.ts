@@ -6,7 +6,6 @@ export async function seed(knex: Knex): Promise<void> {
   // Inserts seed entries
   await knex('products').insert([
     {
-      id: 1,
       name: 'One Life Graphic T-shirt',
       description:
         'This graphic t-shirt is perfect for any occasion. Crafted from a soft and breathable fabric, it offers superior comfort and style.',
@@ -22,7 +21,6 @@ export async function seed(knex: Knex): Promise<void> {
       updated_by: 'admin',
     },
     {
-      id: 2,
       name: 'Men\'s Casual Shirt',
       description:
         'A stylish and comfortable casual shirt made from 100% cotton.',
@@ -38,7 +36,6 @@ export async function seed(knex: Knex): Promise<void> {
       updated_by: 'admin',
     },
     {
-      id: 3,
       name: 'Women\'s Winter Hoodie',
       description:
         'A cozy hoodie designed for warmth and style during the colder months.',
@@ -54,7 +51,6 @@ export async function seed(knex: Knex): Promise<void> {
       updated_by: 'admin',
     },
     {
-      id: 4,
       name: 'Men\'s Athletic Shorts',
       description:
         'Lightweight and breathable shorts perfect for workouts and casual wear.',
@@ -70,7 +66,6 @@ export async function seed(knex: Knex): Promise<void> {
       updated_by: 'admin',
     },
     {
-      id: 5,
       name: 'Women\'s Elegant shirts',
       description:
         'A sophisticated shirts that can be dressed up or down for any occasion.',
@@ -86,7 +81,6 @@ export async function seed(knex: Knex): Promise<void> {
       updated_by: 'admin',
     },
     {
-      id: 6,
       name: 'Men\'s Denim Jacket',
       description:
         'A classic denim jacket that never goes out of style, perfect for layering.',
@@ -102,7 +96,6 @@ export async function seed(knex: Knex): Promise<void> {
       updated_by: 'admin',
     },
     {
-      id: 7,
       name: 'Women\'s pants',
       description:
         'A flowypant  dress that is perfect for summer outings and beach days.',
@@ -118,7 +111,6 @@ export async function seed(knex: Knex): Promise<void> {
       updated_by: 'admin',
     },
     {
-      id: 8,
       name: 'Men\'s Formal Shirt',
       description:
         'A crisp formal shirt perfect for special occasions and business meetings.',
@@ -134,7 +126,6 @@ export async function seed(knex: Knex): Promise<void> {
       updated_by: 'admin',
     },
     {
-      id: 9,
       name: 'Women\'s Yoga Pants',
       description:
         'stretchy yoga pants designed for comfort and flexibility during workouts.',
@@ -150,7 +141,6 @@ export async function seed(knex: Knex): Promise<void> {
       updated_by: 'admin',
     },
     {
-      id: 10,
       name: 'Men\'s Leather Belt',
       description:
         'A high-quality leather belt that adds a touch of sophistication to any outfit.',
