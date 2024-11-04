@@ -36,7 +36,14 @@ export const fetchNewSellingProducts = async (): Promise<ISellingProduct[]> => {
       'images.url as image_url',
       // eslint-disable-next-line quotes
       knex.raw("STRING_AGG(sizes.name, ', ') as sizes"),
+      // eslint-disable-next-line quotes
+      knex.raw("STRING_AGG(sizes.name, ', ') as sizes"),
     )
+    .leftJoin('images', 'products.image_id', 'images.id')
+    .leftJoin('products_sizes', 'products.id', 'products_sizes.product_id')
+    .leftJoin('sizes', 'products_sizes.size_id', 'sizes.id')
+    .where('products.category_id', 1)
+    .groupBy('products.id', 'images.url');
     .leftJoin('images', 'products.image_id', 'images.id')
     .leftJoin('products_sizes', 'products.id', 'products_sizes.product_id')
     .leftJoin('sizes', 'products_sizes.size_id', 'sizes.id')
@@ -56,7 +63,14 @@ export const fetchTopSellingProducts = async (): Promise<ISellingProduct[]> => {
       'images.url as image_url',
       // eslint-disable-next-line quotes
       knex.raw("STRING_AGG(sizes.name, ', ') as sizes"),
+      // eslint-disable-next-line quotes
+      knex.raw("STRING_AGG(sizes.name, ', ') as sizes"),
     )
+    .leftJoin('images', 'products.image_id', 'images.id')
+    .leftJoin('products_sizes', 'products.id', 'products_sizes.product_id')
+    .leftJoin('sizes', 'products_sizes.size_id', 'sizes.id')
+    .where('products.category_id', 2)
+    .groupBy('products.id', 'images.url');
     .leftJoin('images', 'products.image_id', 'images.id')
     .leftJoin('products_sizes', 'products.id', 'products_sizes.product_id')
     .leftJoin('sizes', 'products_sizes.size_id', 'sizes.id')

@@ -29,6 +29,14 @@ export const getTopSellingProducts = async () => {
       sizes: product.sizes ? product.sizes.split(',') : [],
     };
   });
+  const products = await ProductDAO.fetchTopSellingProducts();
+
+  return products.map((product: ISellingProduct) => {
+    return {
+      ...product,
+      sizes: product.sizes ? product.sizes.split(',') : [],
+    };
+  });
 };
 
 export const getNewSellingProducts = async () => {
