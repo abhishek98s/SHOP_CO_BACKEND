@@ -4,4 +4,5 @@ export const productErrorMessages = {
   INPUT_REQUIRED:
     'name, description, rating, price, stock_quantity are required',
   NOT_FOUND: 'Product not found',
+  UPDATE_FAILED:'Failed to update product',
 };
