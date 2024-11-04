@@ -1,12 +1,34 @@
-import { StatusCodes } from 'http-status-codes';import { IProduct, IProductUser, TSize } from './product.model';
+import { StatusCodes } from 'http-status-codes';
+import {
+  IProduct,
+  IProductResponse,
+  IProductUser,
+  ISellingProduct,
+  TSize,
+} from './product.model';
 import * as ProductDAO from './product.repository';
+import * as ProductSizesDAO from '../product_size/product_size.repository';
 import * as ImageService from '../image/image.service';
 import * as ProductSizeService from '../product_size/product_size.service';
 import { productErrorMessages } from './constants/productErrorMessages';
 import { customHttpError } from '../../utils/customErrorHandler';
 import { IProduct_size } from '../product_size/product_size.model';
+import {
+  categoryMap,
+  productTypeMap,
+  sizeMap,
+  stylesMap,
+} from './constants/productMaps';
+
 export const getTopSellingProducts = async () => {
-  return await ProductDAO.fetchTopSellingProducts();
+  const products = await ProductDAO.fetchTopSellingProducts();
+
+  return products.map((product: ISellingProduct) => {
+    return {
+      ...product,
+      sizes: product.sizes ? product.sizes.split(',') : [],
+    };
+  });
 };
 
 export const getNewSellingProducts = async () => {
@@ -36,25 +58,6 @@ export const postProduct = async (
   imagePath?: string,
   imageName?: string,
 ) => {
-  const categoryMap = {
-    new_arrival: 1,
-    top_selling: 2,
-  };
-
-  const stylesMap = {
-    casual: 1,
-    formal: 2,
-    party: 3,
-    gym: 4,
-  };
-
-  const productTypeMap = {
-    't-shirts': 1,
-    shorts: 2,
-    shirts: 3,
-    hoodie: 4,
-  };
-
   let image_id = productData.image_id;
 
   if (isImage) {
@@ -64,11 +67,9 @@ export const postProduct = async (
   const productObj: IProduct = {
     ...productData,
 
-    category_id: categoryMap[categoryName] | 3,
-    style_id: stylesMap[stylesName] | 1,
-    type_id: productTypeMap[productType] | 1,
-
-    size_id: 1,
+    category_id: categoryMap.get(categoryName.toLowerCase()) || 3,
+    style_id: stylesMap.get(stylesName.toLowerCase()) || 1,
+    type_id: productTypeMap.get(productType.toLowerCase()) || 1,
 
     image_id,
   };
@@ -82,18 +83,10 @@ export const postProduct = async (
     );
 
   for (const size of sizeArr) {
-    const sizeMap: { [key: string]: number } = {
-      'xx-small': 1,
-      'x-small': 2,
-      small: 3,
-      medium: 4,
-      large: 5,
-      'x-large': 6,
-      'xx-large': 7,
-    };
-
     const lowerSize = size.toLowerCase();
-    const sizeId: number = sizeMap[lowerSize];
+    const sizeId = sizeMap.get(lowerSize);
+
+    if (!sizeId) return;
 
     const productSizeObj: IProduct_size = {
       product_id: product.productId,
@@ -109,9 +102,10 @@ export const postProduct = async (
 
 export const patchProduct = async (
   isImage: boolean,
-  productData: Partial<IProduct>,
+  productData: Partial<IProductResponse>,
   productId: number,
   username: string,
+  sizeArr: string[],
   imagePath?: string,
   imageName?: string,
 ) => {
@@ -122,22 +116,91 @@ export const patchProduct = async (
       productErrorMessages.NOT_FOUND,
     );
 
-  let image_id;
+  const image_id = isImage
+    ? await ImageService.saveImage(imagePath!, imageName!, username)
+    : currentProduct.image_id;
 
-  if (isImage) {
-    image_id = await ImageService.saveImage(imagePath!, imageName!, username);
-  } else {
-    image_id = currentProduct.image_id;
-  }
+  const {
+    name = currentProduct.name,
+    description = currentProduct.description,
+    rating = currentProduct.rating,
+    price = currentProduct.price,
+    stock_quantity = currentProduct.stock_quantity,
+    discount = currentProduct.discount,
+    discounted_price = currentProduct.discounted_price,
+    category,
+    style,
+    type,
+  } = productData;
 
   const updatedProduct: Partial<IProduct> = {
-    ...currentProduct,
-    ...productData,
+    name,
+    description,
+    rating,
+    price,
+    stock_quantity,
+    discount,
+    discounted_price,
+
+    category_id:
+      categoryMap.get(category!.toLowerCase()) || currentProduct.category_id,
+    style_id: stylesMap.get(style!.toLowerCase()) || currentProduct.style_id,
+    type_id: productTypeMap.get(type!.toLowerCase()) || currentProduct.type_id,
+
     image_id,
     updated_by: username,
   };
 
-  return await ProductDAO.update(updatedProduct, productId);
+  const product = await ProductDAO.update(updatedProduct, productId);
+  const { productId: updatedProductId } = product;
+
+  if (!updatedProductId)
+    throw new customHttpError(
+      StatusCodes.REQUEST_TOO_LONG,
+      productErrorMessages.UPDATE_FAILED,
+    );
+
+  const currentProductSizes = currentProduct
+    .sizes!.split(',')
+    .map((size: string) => size.trim().toLowerCase());
+  const userProductSizes = sizeArr.map((size: string) => size.toLowerCase());
+
+  const sizeToRemove = currentProductSizes.filter((size) => {
+    return !userProductSizes.includes(size.toLowerCase());
+  });
+
+  await Promise.all(
+    sizeToRemove.map(async (size) => {
+      const sizeId = sizeMap.get(size);
+      if (sizeId) {
+        await ProductSizesDAO.remove(updatedProductId, sizeId);
+      }
+    }),
+  );
+
+  await Promise.all(
+    sizeArr.map(async (size) => {
+      const lowerSize = size.toLowerCase();
+      const sizeId = sizeMap.get(lowerSize);
+
+      if (!sizeId) return;
+
+      const existingEntry = await ProductSizesDAO.existingEntry(
+        updatedProductId,
+        sizeId,
+      );
+
+      if (!existingEntry) {
+        const productSizeObj: IProduct_size = {
+          product_id: updatedProductId,
+          size_id: sizeId,
+          created_by: username,
+          updated_by: username,
+        };
+        await ProductSizeService.postProductSize(productSizeObj);
+      }
+    }),
+  );
 };
 
 export const deleteProduct = async (productId: number) => {
