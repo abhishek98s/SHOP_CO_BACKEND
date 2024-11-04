@@ -1,9 +1,4 @@
-import { errorSchema } from './error.schema';
-export const docs = {
-  '/product/new_arrival': {
-    get: {
-      tags: ['Product'],
-      security: [
+import { errorSchema } from './error.schema';export const docs = {  '/product/new_arrival': {    get: {      tags: ['Product'],      security: [
         {
           bearerAuth: [],
         },
@@ -87,64 +82,72 @@ export const docs = {
         content: {
           'multipart/form-data': {
             schema: {
+              type: 'object',
               properties: {
-                success: { type: 'boolean' },
-                data: {
-                  type: 'object',
-                  properties: {
-                    name: {
-                      type: 'string',
-                      description: 'Name of the product',
-                    },
-                    description: {
-                      type: 'string',
-                      description: 'Description of the product',
-                    },
-                    rating: {
-                      type: 'number',
-                      format: 'float',
-                      description: 'Rating of the product',
-                    },
-                    price: {
-                      type: 'number',
-                      format: 'float',
-                      description: 'Price of the product',
-                    },
-                    stock_quantity: {
-                      type: 'integer',
-                      description: 'Quantity of the product in stock',
-                    },
-                    discount: {
-                      type: 'number',
-                      format: 'float',
-                      description: 'Discount percentage on the product',
-                    },
-                    discounted_price: {
-                      type: 'number',
-                      format: 'float',
-                      description: 'Price after discount',
-                    },
-                    category: {
-                      type: 'string',
-                      enum: ['top_selling', 'new_arrival'],
-                      description: 'Category of the product',
-                    },
-                    style: {
-                      type: 'string',
-                      enum: ['casual', 'formal', 'party', 'gym'],
-                      description: 'Style of the product',
-                    },
-                    type: {
-                      type: 'string',
-                      enum: ['t-shirts', 'shorts', 'shirts', 'hoodie'],
-                      description: 'Type of the product',
-                    },
-                    shop_co_image: {
-                      type: 'string',
-                      format: 'binary',
-                      description: 'File to upload (e.g., product image)',
-                    },
-                  },
+                name: {
+                  type: 'string',
+                  description: 'Name of the product',
+                },
+                description: {
+                  type: 'string',
+                  description: 'Description of the product',
+                },
+                rating: {
+                  type: 'number',
+                  format: 'float',
+                  description: 'Rating of the product',
+                },
+                price: {
+                  type: 'number',
+                  format: 'float',
+                  description: 'Price of the product',
+                },
+                stock_quantity: {
+                  type: 'integer',
+                  description: 'Quantity of the product in stock',
+                },
+                discount: {
+                  type: 'number',
+                  format: 'float',
+                  description: 'Discount percentage on the product',
+                },
+                discounted_price: {
+                  type: 'number',
+                  format: 'float',
+                  description: 'Price after discount',
+                },
+                category: {
+                  type: 'string',
+                  enum: ['top_selling', 'new_arrival'],
+                  description: 'Category of the product',
+                },
+                style: {
+                  type: 'string',
+                  enum: ['casual', 'formal', 'party', 'gym'],
+                  description: 'Style of the product',
+                },
+                type: {
+                  type: 'string',
+                  enum: ['t-shirts', 'shorts', 'shirts', 'hoodie'],
+                  description: 'Type of the product',
+                },
+                sizes: {
+                  type: 'string',
+                  enum: [
+                    'xx-small',
+                    'x-small',
+                    'small',
+                    'medium',
+                    'large',
+                    'x-large',
+                    'xx-large',
+                  ],
+                  description: 'Sizes of the product',
+                },
+                shop_co_image: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'File to upload (e.g., product image)',
                 },
               },
               required: [
@@ -158,6 +161,7 @@ export const docs = {
                 'category',
                 'style',
                 'type',
+                'sizes',
                 'shop_co_image',
               ],
             },
@@ -315,6 +319,19 @@ export const docs = {
                   enum: ['t-shirts', 'shorts', 'shirts', 'hoodie'],
                   description: 'Type of the product',
                 },
+                sizes: {
+                  type: 'string',
+                  enum: [
+                    'xx-small',
+                    'x-small',
+                    'small',
+                    'medium',
+                    'large',
+                    'x-large',
+                    'xx-large',
+                  ],
+                  description: 'Sizes of the product',
+                },
                 shop_co_image: {
                   type: 'string',
                   format: 'binary',
@@ -457,6 +474,11 @@ export const schema = {
         type: 'string',
         description: 'Style name of the product',
       },
+      sizes: {
+        type: 'array',
+        items: ['string'],
+        description: 'Sizes of the product',
+      },
     },
   },
   ProductResponse: {
@@ -493,6 +515,11 @@ export const schema = {
       image_url: {
         type: 'string',
         description: 'Image url of the product',
+      },
+      sizes: {
+        type: 'array',
+        items: ['string'],
+        description: 'Sizes of the product',
       },
     },
   },
