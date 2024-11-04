@@ -1,5 +1,4 @@
 import { Knex } from 'knex';
-
 export async function seed(knex: Knex): Promise<void> {
   // Deletes ALL existing entries
   await knex('users').del();
@@ -7,7 +6,6 @@ export async function seed(knex: Knex): Promise<void> {
   // Inserts seed entries
   await knex('users').insert([
     {
-      id: 1,
       username: 'admin',
       email: 'admin@gmail.com',
       password: '$2b$10$BjCXsc03p28FUNE558NeCuB7rirPuCCMB77uFgI/JFtvpNDH74tHO',
@@ -18,7 +16,6 @@ export async function seed(knex: Knex): Promise<void> {
       updated_by: 'admin',
     },
     {
-      id: 2,
       username: 'seller1',
       email: 'seller1@gmail.com',
       password: '$2b$10$XEb/4zdN563D/znQNSa/ge8GGv9DIQeJnToaj2YdQufQhulpX3Iga',
@@ -29,7 +26,6 @@ export async function seed(knex: Knex): Promise<void> {
       updated_by: 'admin',
     },
     {
-      id: 3,
       username: 'user1',
       email: 'user1@gmail.com',
       password: '$2b$10$llTZN/OUQE/tLNGSLg110O3WdYnqMQFDGWicPQASBZEhyRRm14jUS',
@@ -40,7 +36,6 @@ export async function seed(knex: Knex): Promise<void> {
       updated_by: 'admin',
     },
     {
-      id: 4,
       username: 'seller2',
       email: 'seller2@gmail.com',
       password: '$2b$10$XEb/4zdN563D/znQNSa/ge8GGv9DIQeJnToaj2YdQufQhulpX3Iga',
