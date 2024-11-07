@@ -1,15 +1,11 @@
-import express from 'express';import cors from 'cors';
-import 'express-async-errors';
-import pathToSwaggerUi from 'swagger-ui-dist';
-import bodyParser from 'body-parser';
-
+import express from 'express';import cors from 'cors';import 'express-async-errors';import pathToSwaggerUi from 'swagger-ui-dist';import bodyParser from 'body-parser';
 import { config } from './config/config';
 import { swagger } from './swagger/swagger';
 
 import notFoundHandler from './middleware/notFoundHandler';
 import userRoutes from './entities/user/user.routes';
 
-import productRoutes from './entities/product/product.routes';
+import reviewRoutes from './entities/review/review.route';
 import authRoutes from './auth/auth.routes';
 import customErrorHandler from './middleware/errorHandler';
 
@@ -25,7 +21,7 @@ app.use(express.static(pathToSwaggerUi.absolutePath()));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/product', productRoutes);
+app.use('/api/review', reviewRoutes);
 
 swagger(app);
 
