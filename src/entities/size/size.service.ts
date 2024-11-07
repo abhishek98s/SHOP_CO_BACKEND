@@ -31,7 +31,7 @@ export const patchSizeById = async (sizeId: number, sizeData: ISize) => {
   if (!currentSize)
     throw new customHttpError(
       StatusCodes.UNPROCESSABLE_ENTITY,
-      sizeErrorMessages.ALREADY_EXIST,
+      sizeErrorMessages.DOESNOT_EXIST,
     );
 
   return await SizeDAO.update(sizeId, sizeData);
