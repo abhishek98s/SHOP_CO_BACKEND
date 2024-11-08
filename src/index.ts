@@ -7,7 +7,7 @@ import { swagger } from './swagger/swagger';
 import notFoundHandler from './middleware/notFoundHandler';
 import userRoutes from './entities/user/user.routes';
 
-import productRoutes from './entities/product/product.routes';
+import categoryRoutes from './entities/category/category.routes';
 import authRoutes from './auth/auth.routes';
 import sizeRoutes from './entities/size/size.routes';
 import customErrorHandler from './middleware/errorHandler';
@@ -24,6 +24,7 @@ app.use(express.static(pathToSwaggerUi.absolutePath()));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/category', categoryRoutes);
 app.use('/api/product', productRoutes);
 app.use('/api/size', sizeRoutes);
 
