@@ -1,10 +1,46 @@
-import { Request, Response } from 'express';import { StatusCodes } from 'http-status-codes';
-
+import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { productErrorMessages } from './constants/productErrorMessages';
 import * as ProductService from './product.service';
 import { IProductResponse, IProductUser } from './product.model';
 import { productSuccessMessages } from './constants/productSuccessMessages';
 import { customHttpError } from '../../utils/customErrorHandler';
+export const getAllProducts = async (req: Request, res: Response) => {
+  const { minPrice, maxPrice, type = '', style = '', sizes = '' } = req.query;
+
+  const conMinPrice = parseInt(minPrice as string);
+  const conMaxPrice = parseInt(maxPrice as string);
+
+  if (!conMinPrice || !conMaxPrice)
+    throw new customHttpError(
+      StatusCodes.BAD_REQUEST,
+      productErrorMessages.MIN_MAX_REUIQRED,
+    );
+
+  if (conMinPrice < 0 || conMaxPrice < 0 || conMinPrice > conMaxPrice) {
+    throw new Error('Invalid price range');
+  }
+
+  const productSizes = (sizes as string)
+    .split(',')
+    .map((size) => {
+      if (size.trim().length > 1) {
+        return size.toLowerCase();
+      }
+    })
+    .filter((item): item is string => item !== undefined);
+
+  const result = await ProductService.filterProducts(
+    conMinPrice,
+    conMaxPrice,
+    type as string,
+    style as string,
+    productSizes,
+  );
+
+  return res.status(StatusCodes.OK).json({ success: true, data: result });
+};
+
 export const getNewSellingProducts = async (req: Request, res: Response) => {
   const result = await ProductService.getNewSellingProducts();
   return res.status(StatusCodes.OK).json({ success: true, data: result });
