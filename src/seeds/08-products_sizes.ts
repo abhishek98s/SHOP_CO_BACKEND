@@ -1,4 +1,11 @@
-import { Knex } from 'knex';export async function seed(knex: Knex): Promise<void> {  // Deletes ALL existing entries  await knex.raw('ALTER SEQUENCE products_sizes_id_seq RESTART WITH 1');  await knex('products_sizes').del();  // Inserts seed entries
+
+import { Knex } from 'knex';
+export async function seed(knex: Knex): Promise<void> {
+  // Deletes ALL existing entries
+  await knex.raw('ALTER SEQUENCE products_sizes_id_seq RESTART WITH 1');
+  await knex('products_sizes').del();
+
+  // Inserts seed entries
   await knex('products_sizes').insert([
     { product_id: 1, size_id: 1, created_by: 'admin', updated_by: 'admin' },
     { product_id: 1, size_id: 2, created_by: 'admin', updated_by: 'admin' },

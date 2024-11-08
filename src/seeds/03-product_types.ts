@@ -1,6 +1,5 @@
-import { Knex } from 'knex';
-export async function seed(knex: Knex): Promise<void> {
-  // Deletes ALL existing entries
+import { Knex } from 'knex';export async function seed(knex: Knex): Promise<void> {  // Deletes ALL existing entries
+  await knex.raw('ALTER SEQUENCE product_types_id_seq RESTART WITH 1');
   await knex('product_types').del();
 
   // Inserts seed entries
