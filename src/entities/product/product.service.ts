@@ -1,4 +1,5 @@
-import { StatusCodes } from 'http-status-codes';import {
+import { StatusCodes } from 'http-status-codes';
+import {
   IProduct,
   IProductResponse,
   IProductUser,
@@ -151,10 +152,15 @@ export const patchProduct = async (
     discount,
     discounted_price,
 
-    category_id:
-      categoryMap.get(category!.toLowerCase()) || currentProduct.category_id,
-    style_id: stylesMap.get(style!.toLowerCase()) || currentProduct.style_id,
-    type_id: productTypeMap.get(type!.toLowerCase()) || currentProduct.type_id,
+    category_id: category
+      ? categoryMap.get(category!.toLowerCase())
+      : currentProduct.category_id,
+    style_id: style
+      ? stylesMap.get(style!.toLowerCase())
+      : currentProduct.style_id,
+    type_id: type
+      ? productTypeMap.get(type!.toLowerCase())
+      : currentProduct.type_id,
 
     image_id,
     updated_by: username,
@@ -221,4 +227,41 @@ export const deleteProduct = async (productId: number) => {
     );
 
   return ProductDAO.remove(productId);
+};
+
+export const filterProducts = async (
+  minPrice: number,
+  maxPrice: number,
+  type: string,
+  style: string,
+  sizes: string[],
+) => {
+  if (minPrice < 0 || maxPrice < 0 || minPrice > maxPrice) {
+    throw new Error('Invalid price range');
+  }
+
+  const type_id = type ? productTypeMap.get(type) : 1;
+  const style_id = style ? stylesMap.get(style) : 1;
+
+  let sizeArr: number[];
+  console.log(sizes);
+  if (sizes.length > 0) {
+    sizeArr = sizes
+      .map((size: string) => {
+        if (sizeMap.get(size)) {
+          return sizeMap.get(size);
+        }
+      })
+      .filter((item): item is number => item !== undefined);
+  } else {
+    sizeArr = [1, 2, 3, 4, 5, 6, 7];
+  }
+
+  return await ProductDAO.filter(
+    minPrice,
+    maxPrice,
+    type_id!,
+    style_id!,
+    sizeArr,
+  );
 };

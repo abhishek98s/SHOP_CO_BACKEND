@@ -1,10 +1,4 @@
-import knex from '../../config/knex.config';import { IProduct, ISellingProduct } from './product.model';
-export const fetchById = async (productId: number): Promise<IProduct> => {
-  return await knex('products')
-    .select(
-      'products.id',
-      'products.name',
-      'products.rating',
+import knex from '../../config/knex.config';import { IProduct, ISellingProduct } from './product.model';export const fetchById = async (productId: number): Promise<IProduct> => {  return await knex('products')    .select(      'products.id',      'products.name',      'products.rating',
       'products.price',
       'products.stock_quantity',
       'products.discount',
@@ -113,4 +107,30 @@ export const update = async (
 
 export const remove = async (productId: number) => {
   return await knex('products').delete().where('id', productId);
+};
+
+export const filter = async (
+  minPrice: number,
+  maxPrice: number,
+  type_id: number,
+  style_id: number,
+  size_ids: number[],
+) => {
+  return await knex('products')
+    .select(
+      'products.id',
+      'products.name AS product_name',
+      'products.price',
+      'products.rating',
+      'products.discount',
+      // eslint-disable-next-line quotes
+      knex.raw("STRING_AGG(sizes.name, ', ') AS size_names"),
+    )
+    .leftJoin('products_sizes', 'products.id', 'products_sizes.product_id')
+    .leftJoin('sizes', 'products_sizes.size_id', 'sizes.id')
+    .where('products.type_id', type_id)
+    .andWhere('products.style_id', style_id)
+    .andWhereBetween('products.price', [minPrice, maxPrice])
+    .whereIn('products_sizes.size_id', size_ids)
+    .groupBy('products.id');
 };
