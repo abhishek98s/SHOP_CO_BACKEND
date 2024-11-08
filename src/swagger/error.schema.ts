@@ -1,12 +1,11 @@
-export const errorSchema = {
-  UNAUTHORIZED: {
+export const errorSchema = {  UNAUTHORIZED: {
     description: 'Unauthorized access due to invalid credentials',
     content: {
       'application/json': {
         schema: {
           type: 'object',
           properties: {
-            success: { type: 'boolean' },
+            success: { type: 'boolean', example: 'false' },
             message: { type: 'string' },
           },
         },
@@ -20,7 +19,7 @@ export const errorSchema = {
         schema: {
           type: 'object',
           properties: {
-            success: { type: 'boolean' },
+            success: { type: 'boolean', example: 'false' },
             message: { type: 'string' },
           },
         },
@@ -34,7 +33,7 @@ export const errorSchema = {
         schema: {
           type: 'object',
           properties: {
-            success: { type: 'boolean' },
+            success: { type: 'boolean', example: 'false' },
             message: { type: 'string' },
           },
         },
@@ -48,7 +47,7 @@ export const errorSchema = {
         schema: {
           type: 'object',
           properties: {
-            success: { type: 'boolean' },
+            success: { type: 'boolean', example: 'false' },
             message: { type: 'string' },
           },
         },
@@ -62,7 +61,7 @@ export const errorSchema = {
         schema: {
           type: 'object',
           properties: {
-            success: { type: 'boolean' },
+            success: { type: 'boolean', example: 'false' },
             message: { type: 'string' },
           },
         },
