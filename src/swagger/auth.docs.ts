@@ -1,5 +1,4 @@
-import { errorSchema } from './error.schema';
-export const docs = {
+import { errorSchema } from './error.schema';export const docs = {
   '/auth/login': {
     post: {
       tags: ['Authentication'],
@@ -102,6 +101,9 @@ export const docs = {
         },
         '400': {
           ...errorSchema.BAD_REQUEST,
+        },
+        '422': {
+          ...errorSchema.CONFLICT,
         },
       },
     },
