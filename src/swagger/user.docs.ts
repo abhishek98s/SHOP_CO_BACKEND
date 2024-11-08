@@ -1,6 +1,4 @@
-import { errorSchema } from './error.schema';
-export const docs = {
-  '/user': {
+import { errorSchema } from './error.schema';export const docs = {  '/user': {
     post: {
       tags: ['User'],
       security: [
@@ -44,18 +42,21 @@ export const docs = {
               },
             },
           },
-          '400': {
-            ...errorSchema.BAD_REQUEST,
-          },
-          '401': {
-            ...errorSchema.UNAUTHORIZED,
-          },
-          '409': {
-            ...errorSchema.CONFLICT,
-          },
-          '413': {
-            ...errorSchema.BAD_REQUEST,
-          },
+        },
+        '400': {
+          ...errorSchema.BAD_REQUEST,
+        },
+        '401': {
+          ...errorSchema.UNAUTHORIZED,
+        },
+        '409': {
+          ...errorSchema.CONFLICT,
+        },
+        '413': {
+          ...errorSchema.BAD_REQUEST,
+        },
+        '422': {
+          ...errorSchema.BAD_REQUEST,
         },
       },
     },
