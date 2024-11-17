@@ -131,8 +131,9 @@ import { errorSchema } from './error.schema';export const docs = {  '/product/ne
                   enum: ['t-shirts', 'shorts', 'shirts', 'hoodie'],
                   description: 'Type of the product',
                 },
-                sizes: {
+                size: {
                   type: 'string',
+                  example:['xx-small'],
                   enum: [
                     'xx-small',
                     'x-small',
@@ -156,9 +157,8 @@ import { errorSchema } from './error.schema';export const docs = {  '/product/ne
                 'rating',
                 'price',
                 'stock_quantity',
-                'discount',
-                'discounted_price',
                 'category',
+                'size',
                 'style',
                 'type',
                 'sizes',
@@ -319,7 +319,7 @@ import { errorSchema } from './error.schema';export const docs = {  '/product/ne
                   enum: ['t-shirts', 'shorts', 'shirts', 'hoodie'],
                   description: 'Type of the product',
                 },
-                sizes: {
+                size: {
                   type: 'string',
                   enum: [
                     'xx-small',

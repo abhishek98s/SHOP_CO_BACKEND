@@ -1,8 +1,6 @@
-import express from 'express';
-import cors from 'cors';
+import express from 'express';import cors from 'cors';
 import 'express-async-errors';
 import pathToSwaggerUi from 'swagger-ui-dist';
-import bodyParser from 'body-parser';
 import bodyParser from 'body-parser';
 
 import { config } from './config/config';
@@ -16,6 +14,7 @@ import reviewRoutes from './entities/review/review.route';
 import categoryRoutes from './entities/category/category.routes';
 import authRoutes from './auth/auth.routes';
 import sizeRoutes from './entities/size/size.routes';
+import productRoutes from './entities/product/product.routes';
 import customErrorHandler from './middleware/errorHandler';
 
 const app = express();
