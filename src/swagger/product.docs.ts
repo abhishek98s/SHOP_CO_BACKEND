@@ -1,4 +1,9 @@
-import { errorSchema } from './error.schema';export const docs = {  '/product/new_arrival': {    get: {      tags: ['Product'],      security: [
+import { errorSchema } from './error.schema';
+export const docs = {
+  '/product/new_arrival': {
+    get: {
+      tags: ['Product'],
+      security: [
         {
           bearerAuth: [],
         },

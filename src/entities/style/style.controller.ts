@@ -4,25 +4,25 @@ import * as StyleService from './style.service';
 import { styleSuccessMessages } from './constant/styleSuccessMessages';
 import { customHttpError } from '../../utils/customErrorHandler';
 import { styleErrorMessages } from './constant/styleErrorMessages';
-import { IStylee } from './style.model';
+import { IStyle } from './style.model';
 
-export const getStylees = async (req: Request, res: Response) => {
-  const result = await StyleeService.geStyleles();
+export const getStyles = async (req: Request, res: Response) => {
+  const result = await StyleService.getStyles();
 
   res.status(StatusCodes.OK).json({ success: true, data: result });
 };
 
-export const postStylee = async (req: Request, res: Response) => {
+export const postStyle = async (req: Request, res: Response) => {
   const { name, user } = req.body;
 
-  await StyleeService.posStylele(name, user.username);
+  await StyleService.postStyle(name, user.username);
 
   res
     .status(StatusCodes.CREATED)
     .json({ success: true, message: styleSuccessMessages.CREATED_SUCCESS });
 };
 
-export const patchStylee = async (req: Request, res: Response) => {
+export const patchStyle = async (req: Request, res: Response) => {
   const styleId = parseInt(req.params.id);
   const { name, user } = req.body;
 
@@ -32,12 +32,12 @@ export const patchStylee = async (req: Request, res: Response) => {
       styleErrorMessages.INVALID_ID,
     );
 
-  const styleObj: IStylee = {
+  const styleObj: IStyle = {
     name,
     updated_by: user.username,
   };
 
-  await StyleeService.patcStyleleById(styleId, styleObj);
+  await StyleService.patchStyleById(styleId, styleObj);
 
   res.status(StatusCodes.OK).json({
     success: true,
@@ -45,7 +45,7 @@ export const patchStylee = async (req: Request, res: Response) => {
   });
 };
 
-export const deleteStylee = async (req: Request, res: Response) => {
+export const deleteStyle = async (req: Request, res: Response) => {
   const styleId = parseInt(req.params.id);
 
   if (isNaN(styleId))
@@ -54,7 +54,7 @@ export const deleteStylee = async (req: Request, res: Response) => {
       styleErrorMessages.INVALID_ID,
     );
 
-  await StyleeService.deletStylele(styleId);
+  await StyleService.deleteStyle(styleId);
 
   res.status(StatusCodes.OK).json({
     success: true,

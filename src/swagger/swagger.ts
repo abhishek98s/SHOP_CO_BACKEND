@@ -1,8 +1,14 @@
-import express from 'express';import swaggerUi from 'swagger-ui-express';
-import { OAS3Definition } from 'swagger-jsdoc';
-import * as user_docs from './user.docs';
+import express from 'express';import swaggerUi from 'swagger-ui-express';import { OAS3Definition } from 'swagger-jsdoc';
+
 import * as auth_docs from './auth.docs';
+import * as category_docs from './category.docs';
+import * as image_docs from './image.docs';
 import * as product_docs from './product.docs';
+import * as size_docs from './size.docs';
+import * as style_docs from './style.docs';
+import * as type_docs from './type.docs';
+import * as review_docs from './review.docs';
+import * as user_docs from './user.docs';
 
 export const swaggerConfig: OAS3Definition = {
   openapi: '3.0.0',
@@ -19,14 +25,30 @@ export const swaggerConfig: OAS3Definition = {
   ],
   paths: {
     ...auth_docs.docs,
-    ...user_docs.docs,
+    ...category_docs.docs,
+    ...image_docs.docs,
     ...product_docs.docs,
+
+    ...size_docs.docs,
+    ...type_docs.docs,
+    ...style_docs.docs,
+    ...review_docs.docs,
+
+    ...user_docs.docs,
   },
   components: {
     ...auth_docs.schema,
     schemas: {
-      ...user_docs.schema,
+      ...category_docs.schema,
+      ...image_docs.schema,
       ...product_docs.schema,
+
+      ...size_docs.schema,
+      ...type_docs.schema,
+      ...style_docs.schema,
+      ...review_docs.schema,
+
+      ...user_docs.schema,
     },
   },
 };
