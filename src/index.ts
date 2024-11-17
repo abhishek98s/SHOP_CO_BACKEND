@@ -1,4 +1,9 @@
-import express from 'express';import cors from 'cors';import 'express-async-errors';import pathToSwaggerUi from 'swagger-ui-dist';import bodyParser from 'body-parser';
+
+import express from 'express';import cors from 'cors';
+import 'express-async-errors';
+import pathToSwaggerUi from 'swagger-ui-dist';
+import bodyParser from 'body-parser';
+
 import { config } from './config/config';
 import { swagger } from './swagger/swagger';
 
@@ -15,6 +20,9 @@ import sizeRoutes from './entities/size/size.routes';
 import styleRoutes from './entities/style/style.routes';
 import typeRoutes from './entities/type/type.routes';
 import userRoutes from './entities/user/user.routes';
+
+import customErrorHandler from './middleware/errorHandler';
+
 
 const app = express();
 const port = config.app.port;

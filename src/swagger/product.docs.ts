@@ -136,8 +136,9 @@ export const docs = {
                   enum: ['t-shirts', 'shorts', 'shirts', 'hoodie'],
                   description: 'Type of the product',
                 },
-                sizes: {
+                size: {
                   type: 'string',
+                  example:['xx-small'],
                   enum: [
                     'xx-small',
                     'x-small',
@@ -161,9 +162,8 @@ export const docs = {
                 'rating',
                 'price',
                 'stock_quantity',
-                'discount',
-                'discounted_price',
                 'category',
+                'size',
                 'style',
                 'type',
                 'sizes',
@@ -324,7 +324,7 @@ export const docs = {
                   enum: ['t-shirts', 'shorts', 'shirts', 'hoodie'],
                   description: 'Type of the product',
                 },
-                sizes: {
+                size: {
                   type: 'string',
                   enum: [
                     'xx-small',
