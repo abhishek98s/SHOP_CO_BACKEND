@@ -26,12 +26,12 @@ export const swaggerConfig: OAS3Definition = {
   paths: {
     ...auth_docs.docs,
     ...category_docs.docs,
-    ...image_docs.docs,
+    // ...image_docs.docs,
     ...product_docs.docs,
 
-    ...size_docs.docs,
-    ...type_docs.docs,
-    ...style_docs.docs,
+    // ...size_docs.docs,
+    // ...type_docs.docs,
+    // ...style_docs.docs,
     ...review_docs.docs,
 
     ...user_docs.docs,
@@ -40,12 +40,12 @@ export const swaggerConfig: OAS3Definition = {
     ...auth_docs.schema,
     schemas: {
       ...category_docs.schema,
-      ...image_docs.schema,
+      // ...image_docs.schema,
       ...product_docs.schema,
 
-      ...size_docs.schema,
-      ...type_docs.schema,
-      ...style_docs.schema,
+      // ...size_docs.schema,
+      // ...type_docs.schema,
+      // ...style_docs.schema,
       ...review_docs.schema,
 
       ...user_docs.schema,
