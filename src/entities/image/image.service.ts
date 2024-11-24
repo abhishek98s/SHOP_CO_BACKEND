@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';import { imageExceptionMessages 
 import * as ImageDAO from './image.repository';
 import { IImage } from './image.model';
 import { customHttpError } from '../../utils/customErrorHandler';
+import { uploadImage } from '../../utils/image';
 
 export const findImage = async (imageId: number): Promise<IImage> => {
   const image: IImage = await ImageDAO.fetchById(imageId);
@@ -19,9 +20,9 @@ export const saveImage = async (
   imageName: string,
   username: string,
 ): Promise<number> => {
-  // const url = await uploadImage(imagePath);
-  const url =
-    'https://tse1.mm.bing.net/th?&id=OVP.ndEpbTsn7FXjzgBPGNO7vgHgFo&w=197&h=110&c=7&pid=1.7&rs=1';
+  const url = await uploadImage(imagePath);
+  // const url =
+  //   'https://tse1.mm.bing.net/th?&id=OVP.ndEpbTsn7FXjzgBPGNO7vgHgFo&w=197&h=110&c=7&pid=1.7&rs=1';
 
   const newImage: IImage = {
     url,
